@@ -1,5 +1,8 @@
 package com.example.simplegcs;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import java.io.IOException;
@@ -15,10 +18,12 @@ import io.dronefleet.mavlink.protocol.MavlinkPacketReader;
 
 public class MyMavlinkWork implements Runnable {
     MavlinkConnection mav_conn;
+    Handler ui_handler;
     //MavlinkPacketReader reader;
-    public MyMavlinkWork(InputStream is, OutputStream os) {
+    public MyMavlinkWork(Handler handler, InputStream is, OutputStream os) {
         mav_conn = MavlinkConnection.create(is, os);
         //reader = new MavlinkPacketReader(is);
+        ui_handler = handler;
     }
 
     @Override
@@ -49,6 +54,11 @@ public class MyMavlinkWork implements Runnable {
             } else if (msg.getPayload() instanceof Statustext) {
                 Statustext txt = (Statustext)msg.getPayload();
                 Log.d("chobits", txt.text());
+                Message ui_msg = ui_handler.obtainMessage();
+                Bundle data = new Bundle();
+                data.putString("txt", txt.text());
+                ui_msg.setData(data);
+                ui_handler.sendMessage(ui_msg);
             }
         }
     }

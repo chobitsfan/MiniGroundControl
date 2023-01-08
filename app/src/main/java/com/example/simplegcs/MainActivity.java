@@ -9,6 +9,9 @@ import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +32,13 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
     PipedOutputStream p_os;
     SerialInputOutputManager usbIoManager;
     MyMavlinkWork mav_work;
+    Handler ui_handler = new Handler(Looper.myLooper()) {
+        @Override
+        public void handleMessage(Message msg) {
+            String result = msg.getData().getString("message");
+            //update ui
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
         } catch (IOException e) {
             Log.d("chobits", e.getMessage());
         }
-        mav_work = new MyMavlinkWork(p_is, new ByteArrayOutputStream(1024));
+        mav_work = new MyMavlinkWork(ui_handler, p_is, new ByteArrayOutputStream(1024));
         Thread t1 = new Thread(mav_work);
         t1.start();
         detectMyDevice();
