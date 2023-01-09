@@ -54,10 +54,10 @@ public class MyMavlinkWork implements Runnable {
             } else if (msg.getPayload() instanceof Statustext) {
                 Statustext txt = (Statustext)msg.getPayload();
                 Log.d("chobits", txt.text());
-                Message ui_msg = ui_handler.obtainMessage();
-                Bundle data = new Bundle();
-                data.putString("txt", txt.text());
-                ui_msg.setData(data);
+                Message ui_msg = ui_handler.obtainMessage(253, txt.text());
+                //Bundle data = new Bundle();
+                //data.putString("message", txt.text());
+                //ui_msg.setData(data);
                 ui_handler.sendMessage(ui_msg);
             }
         }

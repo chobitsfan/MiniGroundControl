@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,8 +36,10 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
     Handler ui_handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            String result = msg.getData().getString("message");
+            //String result = msg.getData().getString("message");
             //update ui
+            TextView tv1 = (TextView)findViewById(R.id.test_tv);
+            tv1.append((String)msg.obj+"\n");
         }
     };
 
@@ -44,6 +47,8 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        ((TextView)findViewById(R.id.test_tv)).setMovementMethod(new ScrollingMovementMethod());
 
         PipedInputStream p_is = new PipedInputStream();
         try {
@@ -80,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
     }
 
     void detectMyDevice() {
-        TextView tv1 = (TextView)findViewById(R.id.test_tv);
+        //TextView tv1 = (TextView)findViewById(R.id.test_tv);
 
         // Find all available drivers from attached devices.
         UsbManager manager = (UsbManager)getSystemService(Context.USB_SERVICE);
@@ -91,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
 
         // Open a connection to the first available driver.
         UsbSerialDriver driver = availableDrivers.get(0);
-        tv1.setText(driver.toString());
+        //tv1.setText(driver.toString());
         UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
         if (connection == null) {
             Log.d("chobits", "need usb permission");
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
             e.printStackTrace();
             return;
         }
-        tv1.setText("serial port ok");
+        //tv1.setText("serial port ok");
 
         usbIoManager = new SerialInputOutputManager(port, this);
         usbIoManager.start();
