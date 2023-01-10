@@ -32,7 +32,15 @@
             android:id="@+id/flight_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="unknown" />
+            android:text="unknown"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <TextView
+            android:id="@+id/bat_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="battery"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     </LinearLayout>
 

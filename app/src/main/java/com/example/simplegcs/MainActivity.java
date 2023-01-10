@@ -45,6 +45,10 @@ public class MainActivity extends AppCompatActivity {
                     tv = (TextView)findViewById(R.id.status_txt);
                     tv.append((String)msg.obj+"\n");
                     break;
+                case 3:
+                    tv = (TextView)findViewById(R.id.bat_status);
+                    tv.setText(String.format("%.1f", msg.arg1 * 0.001f)+"V");
+                    break;
             }
         }
     };
@@ -79,16 +83,6 @@ public class MainActivity extends AppCompatActivity {
 
         detectMyDevice();
     }
-
-    /*class MyUSBStatus extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (Objects.equals(action, UsbManager.ACTION_USB_DEVICE_ATTACHED)) {
-                detectMyDevice();
-            }
-        }
-    }*/
 
     @Override
     protected void onDestroy() {
@@ -138,39 +132,4 @@ public class MainActivity extends AppCompatActivity {
         usbIoManager = new SerialInputOutputManager(port, serialListener);
         usbIoManager.start();
     }
-
-    //@Override
-    //public void onNewData(byte[] data) {
-        //Log.d("chobits", "new data " + data.length);
-    //    try {
-    //        p_os.write(data);
-    //    } catch (IOException e) {
-    //        Log.d("chobits", e.getMessage());
-    //    }
-        /*MavlinkMessage msg;
-        try {
-            msg = mav_conn.next();
-        } catch (IOException e) {
-            Log.d("chobits", e.getMessage());
-            return;
-        }
-        while (msg != null) {
-            if (msg.getPayload() instanceof Heartbeat) {
-                // This is a heartbeat message
-                Heartbeat hb = (Heartbeat)msg.getPayload();
-                Log.d("chobits", "heartbeat " + hb.customMode() + "," + msg.getSequence());
-            }
-            try {
-                msg = mav_conn.next();
-            } catch (IOException e) {
-                Log.d("chobits", e.getMessage());
-                return;
-            }
-        }*/
-    //}
-
-    //@Override
-    //public void onRunError(Exception e) {
-    //    Log.d("chobits", e.getMessage());
-    //}
 }
