@@ -8,6 +8,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.util.Date;
 
 import io.dronefleet.mavlink.Mavlink2Message;
 import io.dronefleet.mavlink.MavlinkConnection;
@@ -19,13 +21,14 @@ import io.dronefleet.mavlink.common.MavCmd;
 import io.dronefleet.mavlink.common.MavType;
 import io.dronefleet.mavlink.common.Statustext;
 import io.dronefleet.mavlink.common.SysStatus;
-import io.dronefleet.mavlink.common.Timesync;
 
 public class MyMavlinkWork implements Runnable {
     MavlinkConnection mav_conn;
     Handler ui_handler;
     static String[] flight_mode = {"STABILIZE", "ACRO", "ALT_HOLD", "AUTO", "GUIDED", "LOITER", "RTL", "CIRCLE", "POSITION", "LAND"};
     long last_sys_status_ts = 0;
+    long last_gps_raw_ts = 0;
+    long last_hb_ts = 0;
     public MyMavlinkWork(Handler handler, InputStream is, OutputStream os) {
         mav_conn = MavlinkConnection.create(is, os);
         ui_handler = handler;
@@ -52,6 +55,12 @@ public class MyMavlinkWork implements Runnable {
                 Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
                 Message ui_msg = ui_handler.obtainMessage(1, flight_mode[(int)hb.customMode()]);
                 ui_handler.sendMessage(ui_msg);
+
+                if (last_hb_ts == 0) {
+                    ui_msg = ui_handler.obtainMessage(2, "vehicle " + msg.getOriginSystemId() + " connected " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()));
+                    ui_handler.sendMessage(ui_msg);
+                }
+                last_hb_ts = SystemClock.elapsedRealtime();
 
                 //send hb to fc, keeping link active, otherwise we will not rcv status_txt
                 try {
