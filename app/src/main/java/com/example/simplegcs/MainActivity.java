@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -15,31 +14,38 @@ import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
 import com.hoho.android.usbserial.util.SerialInputOutputManager;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements SerialInputOutputManager.Listener {
+public class MainActivity extends AppCompatActivity {
     UsbSerialPort port = null;
-    PipedOutputStream p_os;
     SerialInputOutputManager usbIoManager;
     MyMavlinkWork mav_work;
+    MyUSBSerialListener serialListener;
     Handler ui_handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
+            TextView tv;
             //String result = msg.getData().getString("message");
             //update ui
-            TextView tv1 = (TextView)findViewById(R.id.test_tv);
-            tv1.append((String)msg.obj+"\n");
+            switch (msg.what) {
+                case 1:
+                    tv = (TextView)findViewById(R.id.flight_mode);
+                    tv.setText((String)msg.obj);
+                    break;
+                case 2:
+                    tv = (TextView)findViewById(R.id.status_txt);
+                    tv.append((String)msg.obj+"\n");
+                    break;
+            }
         }
     };
 
@@ -48,17 +54,29 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ((TextView)findViewById(R.id.test_tv)).setMovementMethod(new ScrollingMovementMethod());
+        ((TextView)findViewById(R.id.status_txt)).setMovementMethod(new ScrollingMovementMethod());
 
-        PipedInputStream p_is = new PipedInputStream();
+        PipedInputStream mav_work_is = new PipedInputStream();
+        PipedOutputStream serial_os = new PipedOutputStream();
         try {
-            p_os = new PipedOutputStream(p_is);
+            serial_os.connect(mav_work_is);
         } catch (IOException e) {
             Log.d("chobits", e.getMessage());
         }
-        mav_work = new MyMavlinkWork(ui_handler, p_is, new ByteArrayOutputStream(1024));
+        PipedInputStream serial_is = new PipedInputStream();
+        PipedOutputStream mav_work_os = new PipedOutputStream();
+        try {
+            mav_work_os.connect(serial_is);
+        } catch (IOException e) {
+            Log.d("chobits", e.getMessage());
+        }
+        mav_work = new MyMavlinkWork(ui_handler, mav_work_is, mav_work_os);
         Thread t1 = new Thread(mav_work);
         t1.start();
+        serialListener = new MyUSBSerialListener(serial_is, serial_os);
+        Thread t2 = new Thread(serialListener);
+        t2.start();
+
         detectMyDevice();
     }
 
@@ -101,8 +119,7 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
         if (connection == null) {
             Log.d("chobits", "need usb permission");
             // add UsbManager.requestPermission(driver.getDevice(), ..) handling here
-            PendingIntent p_intent = PendingIntent.getBroadcast(this, 0,
-                    new Intent("com.example.simplegcs.USB_PERMISSION"), PendingIntent.FLAG_IMMUTABLE);
+            PendingIntent p_intent = PendingIntent.getBroadcast(this, 0, new Intent("com.example.simplegcs.USB_PERMISSION"), PendingIntent.FLAG_IMMUTABLE);
             manager.requestPermission(driver.getDevice(), p_intent);
             return;
         }
@@ -117,18 +134,19 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
         }
         //tv1.setText("serial port ok");
 
-        usbIoManager = new SerialInputOutputManager(port, this);
+        serialListener.port = port;
+        usbIoManager = new SerialInputOutputManager(port, serialListener);
         usbIoManager.start();
     }
 
-    @Override
-    public void onNewData(byte[] data) {
+    //@Override
+    //public void onNewData(byte[] data) {
         //Log.d("chobits", "new data " + data.length);
-        try {
-            p_os.write(data);
-        } catch (IOException e) {
-            Log.d("chobits", e.getMessage());
-        }
+    //    try {
+    //        p_os.write(data);
+    //    } catch (IOException e) {
+    //        Log.d("chobits", e.getMessage());
+    //    }
         /*MavlinkMessage msg;
         try {
             msg = mav_conn.next();
@@ -149,10 +167,10 @@ public class MainActivity extends AppCompatActivity implements SerialInputOutput
                 return;
             }
         }*/
-    }
+    //}
 
-    @Override
-    public void onRunError(Exception e) {
-        Log.d("chobits", e.getMessage());
-    }
+    //@Override
+    //public void onRunError(Exception e) {
+    //    Log.d("chobits", e.getMessage());
+    //}
 }
