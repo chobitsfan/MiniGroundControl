@@ -13,6 +13,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -52,6 +53,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    public void onLandBtn(View view) {
+        mav_work.setModeLand();
+    }
+
+    public void onRTLBtn(View view) {
+        mav_work.setModeRTL();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

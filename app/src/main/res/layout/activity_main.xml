@@ -10,8 +10,37 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:orientation="vertical"
+        android:layout_margin="10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/flight_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="unknown"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <TextView
+            android:id="@+id/bat_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="battery"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <Button
+            android:id="@+id/land"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onLandBtn"
+            android:text="Land" />
+
+        <Button
+            android:id="@+id/rtl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onRTLBtn"
+            android:text="RTL" />
 
         <TextView
             android:id="@+id/status_txt"
@@ -27,20 +56,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/flight_mode"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="unknown"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
-
-        <TextView
-            android:id="@+id/bat_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="battery"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
     </LinearLayout>
 
