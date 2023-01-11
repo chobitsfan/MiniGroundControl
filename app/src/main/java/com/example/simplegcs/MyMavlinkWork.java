@@ -15,6 +15,8 @@ import io.dronefleet.mavlink.Mavlink2Message;
 import io.dronefleet.mavlink.MavlinkConnection;
 import io.dronefleet.mavlink.MavlinkMessage;
 import io.dronefleet.mavlink.common.CommandLong;
+import io.dronefleet.mavlink.common.GpsFixType;
+import io.dronefleet.mavlink.common.GpsRawInt;
 import io.dronefleet.mavlink.common.Heartbeat;
 import io.dronefleet.mavlink.common.MavAutopilot;
 import io.dronefleet.mavlink.common.MavCmd;
@@ -28,7 +30,8 @@ import io.dronefleet.mavlink.common.SysStatus;
 public class MyMavlinkWork implements Runnable {
     MavlinkConnection mav_conn;
     Handler ui_handler;
-    static String[] flight_mode = {"STABILIZE", "ACRO", "ALT_HOLD", "AUTO", "GUIDED", "LOITER", "RTL", "CIRCLE", "POSITION", "LAND"};
+    static String[] FLIGHT_MODE = {"STABILIZE", "ACRO", "ALT_HOLD", "AUTO", "GUIDED", "LOITER", "RTL", "CIRCLE", "POSITION", "LAND"};
+    static String[] GPS_FIX_TYPE = {"No GPS", "No Fix", "2D Fix", "3D Fix", "DGPS", "RTK Float", "RTK Fix"};
     long last_sys_status_ts = 0;
     long last_gps_raw_ts = 0;
     long last_hb_ts = 0;
@@ -37,8 +40,8 @@ public class MyMavlinkWork implements Runnable {
         public void run() {
             while (true) {
                 try {
-                    Thread.sleep(3000);
-                    if (last_hb_ts > 0 && (SystemClock.elapsedRealtime() - last_hb_ts > 5000)) {
+                    Thread.sleep(5000);
+                    if (last_hb_ts > 0 && (SystemClock.elapsedRealtime() - last_hb_ts > 3000)) {
                         Message ui_msg = ui_handler.obtainMessage(2, "vehicle disconnected " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()));
                         ui_handler.sendMessage(ui_msg);
                         last_hb_ts = 0;
@@ -92,7 +95,7 @@ public class MyMavlinkWork implements Runnable {
                 // This is a heartbeat message
                 Heartbeat hb = (Heartbeat)msg_payload;
                 Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
-                Message ui_msg = ui_handler.obtainMessage(1, flight_mode[(int)hb.customMode()]);
+                Message ui_msg = ui_handler.obtainMessage(1, FLIGHT_MODE[(int)hb.customMode()]);
                 ui_handler.sendMessage(ui_msg);
 
                 if (last_hb_ts == 0) {
@@ -116,6 +119,13 @@ public class MyMavlinkWork implements Runnable {
                         Log.d("chobits", e.getMessage());
                     }
                 }
+                if (ts - last_gps_raw_ts > 3000) {
+                    try {
+                        mav_conn.send1(255, 0, CommandLong.builder().command(MavCmd.MAV_CMD_SET_MESSAGE_INTERVAL).param1(24).param2(1000000).build());
+                    } catch (IOException e) {
+                        Log.d("chobits", e.getMessage());
+                    }
+                }
             } else if (msg_payload instanceof Statustext) {
                 Statustext txt = (Statustext)msg_payload;
                 Log.d("chobits", msg.getOriginSystemId() + "," + txt.text());
@@ -125,8 +135,20 @@ public class MyMavlinkWork implements Runnable {
                 //ui_msg.setData(data);
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof SysStatus) {
+                last_sys_status_ts = SystemClock.elapsedRealtime();
                 SysStatus status = (SysStatus)msg_payload;
                 Message ui_msg = ui_handler.obtainMessage(3, status.voltageBattery(), status.currentBattery());
+                ui_handler.sendMessage(ui_msg);
+            } else if (msg_payload instanceof GpsRawInt) {
+                last_gps_raw_ts = SystemClock.elapsedRealtime();
+                GpsRawInt gps_raw = (GpsRawInt)msg_payload;
+                String txt;
+                if (gps_raw.fixType().value() > 1) {
+                    txt = GPS_FIX_TYPE[gps_raw.fixType().value()] + " HDOP:" + String.format("%0.1f", gps_raw.eph() * 0.01) + " " + gps_raw.satellitesVisible() + " satellites";
+                } else {
+                    txt = GPS_FIX_TYPE[gps_raw.fixType().value()];
+                }
+                Message ui_msg = ui_handler.obtainMessage(4, txt);
                 ui_handler.sendMessage(ui_msg);
             } else {
                 //Log.d("chobits", msg.getPayload().getClass().getSimpleName());

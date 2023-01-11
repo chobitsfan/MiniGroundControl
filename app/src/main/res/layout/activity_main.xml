@@ -18,14 +18,21 @@
             android:id="@+id/flight_mode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="unknown"
+            android:text="Disconnected"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <TextView
             android:id="@+id/bat_status"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="battery"
+            android:text="Battery"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
+        <TextView
+            android:id="@+id/gps_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="GPS status"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <Button

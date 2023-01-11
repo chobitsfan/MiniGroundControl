@@ -50,6 +50,10 @@ public class MainActivity extends AppCompatActivity {
                     tv = (TextView)findViewById(R.id.bat_status);
                     tv.setText(String.format("%.1f", msg.arg1 * 0.001f)+"V");
                     break;
+                case 4:
+                    tv = (TextView)findViewById(R.id.gps_status);
+                    tv.setText((String)msg.obj);
+                    break;
             }
         }
     };
