@@ -23,6 +23,8 @@ import io.dronefleet.mavlink.common.MavCmd;
 import io.dronefleet.mavlink.common.MavMode;
 import io.dronefleet.mavlink.common.MavModeFlag;
 import io.dronefleet.mavlink.common.MavType;
+import io.dronefleet.mavlink.common.ParamRequestRead;
+import io.dronefleet.mavlink.common.ParamValue;
 import io.dronefleet.mavlink.common.SetMode;
 import io.dronefleet.mavlink.common.Statustext;
 import io.dronefleet.mavlink.common.SysStatus;
@@ -71,6 +73,14 @@ public class MyMavlinkWork implements Runnable {
     public void setModeRTL() {
         try {
             mav_conn.send1(255,0, SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(6).build());
+        } catch (IOException e) {
+            Log.d("chobits", e.getMessage());
+        }
+    }
+
+    public void fetchParam(String name) {
+        try {
+            mav_conn.send1(255,0, ParamRequestRead.builder().paramId(name).paramIndex(-1).build());
         } catch (IOException e) {
             Log.d("chobits", e.getMessage());
         }
@@ -149,6 +159,10 @@ public class MyMavlinkWork implements Runnable {
                     txt = GPS_FIX_TYPE[gps_raw.fixType().value()];
                 }
                 Message ui_msg = ui_handler.obtainMessage(4, txt);
+                ui_handler.sendMessage(ui_msg);
+            } else if (msg_payload instanceof ParamValue) {
+                ParamValue p_val = (ParamValue)msg_payload;
+                Message ui_msg = ui_handler.obtainMessage(5, p_val.paramValue());
                 ui_handler.sendMessage(ui_msg);
             } else {
                 //Log.d("chobits", msg.getPayload().getClass().getSimpleName());

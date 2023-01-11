@@ -11,9 +11,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.TextUtils;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -54,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
                     tv = (TextView)findViewById(R.id.gps_status);
                     tv.setText((String)msg.obj);
                     break;
+                case 5:
+                    tv = (TextView)findViewById(R.id.param_val);
+                    tv.setText(Float.toString((float)msg.obj));
+                    break;
             }
         }
     };
@@ -64,6 +70,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRTLBtn(View view) {
         mav_work.setModeRTL();
+    }
+
+    public void onFetchParam(View view) {
+        EditText et = (EditText)findViewById(R.id.param_name);
+        String param_name = et.getText().toString();
+        if (!param_name.equals("")) {
+            mav_work.fetchParam(param_name);
+        }
     }
 
     @Override
