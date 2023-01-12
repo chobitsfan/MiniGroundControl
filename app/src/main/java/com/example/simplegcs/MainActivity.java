@@ -60,13 +60,15 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case MyMavlinkWork.UI_PARAM_VAL:
                     data = msg.getData();
+                    tv = (TextView)findViewById(R.id.param_val);
                     if (((TextView)findViewById(R.id.param_name)).getText().toString().toLowerCase().equals(data.getString("name"))) {
-                        tv = (TextView)findViewById(R.id.param_val);
                         if (data.getBoolean("is_float")) {
                             tv.setText(Float.toString(data.getFloat("val")));
                         } else {
                             tv.setText(Integer.toString(data.getInt("val")));
                         }
+                    } else if (data.getString("name").equals("chobits_read_failed")) {
+                        tv.setHint("read failed");
                     }
                     break;
             }
@@ -87,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
         if (!param_name.equals("")) {
             tv = (TextView)findViewById(R.id.param_val);
             tv.setText("");
-            tv.setHint("Reading...");
-            mav_work.fetchParam(param_name);
+            tv.setHint("reading...");
+            mav_work.readParam(param_name);
         }
     }
 

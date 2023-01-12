@@ -40,16 +40,26 @@ public class MyMavlinkWork implements Runnable {
     long last_sys_status_ts = 0;
     long last_gps_raw_ts = 0;
     long last_hb_ts = 0;
+    long param_read_sent_ts = 0;
     Runnable chk_disconn = new Runnable() {
         @Override
         public void run() {
             while (true) {
                 try {
-                    Thread.sleep(5000);
-                    if (last_hb_ts > 0 && (SystemClock.elapsedRealtime() - last_hb_ts > 3000)) {
+                    Thread.sleep(2000);
+                    long ts = SystemClock.elapsedRealtime();
+                    if (last_hb_ts > 0 && (ts - last_hb_ts > 3000)) {
+                        last_hb_ts = 0;
                         Message ui_msg = ui_handler.obtainMessage(2, "vehicle disconnected " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()));
                         ui_handler.sendMessage(ui_msg);
-                        last_hb_ts = 0;
+                    }
+                    if (param_read_sent_ts > 0 && (ts - param_read_sent_ts > 3000)) {
+                        param_read_sent_ts = 0;
+                        Message ui_msg = ui_handler.obtainMessage(UI_PARAM_VAL);
+                        Bundle data = new Bundle();
+                        data.putString("name", "chobits_read_failed");
+                        ui_msg.setData(data);
+                        ui_handler.sendMessage(ui_msg);
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -81,7 +91,8 @@ public class MyMavlinkWork implements Runnable {
         }
     }
 
-    public void fetchParam(String name) {
+    public void readParam(String name) {
+        param_read_sent_ts = SystemClock.elapsedRealtime();
         try {
             mav_conn.send1(255,0, ParamRequestRead.builder().paramId(name).paramIndex(-1).build());
         } catch (IOException e) {
