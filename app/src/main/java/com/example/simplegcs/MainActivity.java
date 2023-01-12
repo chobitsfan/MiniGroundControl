@@ -85,7 +85,9 @@ public class MainActivity extends AppCompatActivity {
         TextView tv = (TextView)findViewById(R.id.param_name);
         String param_name = tv.getText().toString();
         if (!param_name.equals("")) {
-            ((TextView)findViewById(R.id.param_val)).setHint("Reading...");
+            tv = (TextView)findViewById(R.id.param_val);
+            tv.setText("");
+            tv.setHint("Reading...");
             mav_work.fetchParam(param_name);
         }
     }

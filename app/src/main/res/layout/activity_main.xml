@@ -64,6 +64,15 @@
                 android:inputType="textPersonName"
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="="
+                android:textAlignment="center"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
             <EditText
                 android:id="@+id/param_val"
                 android:layout_width="wrap_content"
