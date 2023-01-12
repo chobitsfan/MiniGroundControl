@@ -1,5 +1,6 @@
 package com.example.simplegcs;
 
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -22,6 +23,7 @@ import io.dronefleet.mavlink.common.MavAutopilot;
 import io.dronefleet.mavlink.common.MavCmd;
 import io.dronefleet.mavlink.common.MavMode;
 import io.dronefleet.mavlink.common.MavModeFlag;
+import io.dronefleet.mavlink.common.MavParamType;
 import io.dronefleet.mavlink.common.MavType;
 import io.dronefleet.mavlink.common.ParamRequestRead;
 import io.dronefleet.mavlink.common.ParamValue;
@@ -34,6 +36,7 @@ public class MyMavlinkWork implements Runnable {
     Handler ui_handler;
     static String[] FLIGHT_MODE = {"STABILIZE", "ACRO", "ALT_HOLD", "AUTO", "GUIDED", "LOITER", "RTL", "CIRCLE", "POSITION", "LAND"};
     static String[] GPS_FIX_TYPE = {"No GPS", "No Fix", "2D Fix", "3D Fix", "DGPS", "RTK Float", "RTK Fix"};
+    public static final int UI_PARAM_VAL = 5;
     long last_sys_status_ts = 0;
     long last_gps_raw_ts = 0;
     long last_hb_ts = 0;
@@ -162,7 +165,18 @@ public class MyMavlinkWork implements Runnable {
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof ParamValue) {
                 ParamValue p_val = (ParamValue)msg_payload;
-                Message ui_msg = ui_handler.obtainMessage(5, p_val.paramValue());
+                Log.d("chobits", "param val " + p_val.paramId() + ":" + p_val.paramValue());
+                Message ui_msg = ui_handler.obtainMessage(UI_PARAM_VAL);
+                Bundle data = new Bundle();
+                data.putString("name", p_val.paramId());
+                if (p_val.paramType().entry() == MavParamType.MAV_PARAM_TYPE_REAL32) {
+                    data.putBoolean("is_float", true);
+                    data.putFloat("val", p_val.paramValue());
+                } else {
+                    data.putBoolean("is_float", false);
+                    data.putInt("val", (int)p_val.paramValue());
+                }
+                ui_msg.setData(data);
                 ui_handler.sendMessage(ui_msg);
             } else {
                 //Log.d("chobits", msg.getPayload().getClass().getSimpleName());

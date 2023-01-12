@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     UsbSerialPort port = null;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             TextView tv;
+            Bundle data;
             //String result = msg.getData().getString("message");
             //update ui
             switch (msg.what) {
@@ -56,9 +58,16 @@ public class MainActivity extends AppCompatActivity {
                     tv = (TextView)findViewById(R.id.gps_status);
                     tv.setText((String)msg.obj);
                     break;
-                case 5:
-                    tv = (TextView)findViewById(R.id.param_val);
-                    tv.setText(Float.toString((float)msg.obj));
+                case MyMavlinkWork.UI_PARAM_VAL:
+                    data = msg.getData();
+                    if (((TextView)findViewById(R.id.param_name)).getText().toString().toLowerCase().equals(data.getString("name"))) {
+                        tv = (TextView)findViewById(R.id.param_val);
+                        if (data.getBoolean("is_float")) {
+                            tv.setText(Float.toString(data.getFloat("val")));
+                        } else {
+                            tv.setText(Integer.toString(data.getInt("val")));
+                        }
+                    }
                     break;
             }
         }
@@ -72,10 +81,11 @@ public class MainActivity extends AppCompatActivity {
         mav_work.setModeRTL();
     }
 
-    public void onFetchParam(View view) {
-        EditText et = (EditText)findViewById(R.id.param_name);
-        String param_name = et.getText().toString();
+    public void onReadParam(View view) {
+        TextView tv = (TextView)findViewById(R.id.param_name);
+        String param_name = tv.getText().toString();
         if (!param_name.equals("")) {
+            ((TextView)findViewById(R.id.param_val)).setHint("Reading...");
             mav_work.fetchParam(param_name);
         }
     }

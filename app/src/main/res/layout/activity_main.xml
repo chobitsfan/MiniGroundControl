@@ -79,15 +79,15 @@
             android:id="@+id/button3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Fetch the Parameter"
-            android:onClick="onFetchParam"
+            android:onClick="onReadParam"
+            android:text="Read the Parameter"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <Button
             android:id="@+id/button4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Set the Parameter"
+            android:text="Write the Parameter"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
         <TextView
