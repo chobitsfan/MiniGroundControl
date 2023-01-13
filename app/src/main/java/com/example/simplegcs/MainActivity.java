@@ -67,10 +67,19 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             tv.setText(Integer.toString(data.getInt("val")));
                         }
-                    } else if (data.getString("name").equals("chobits_read_failed")) {
-                        tv.setHint("read failed");
+                    } else if (data.getString("name").equals("chobits_param_rw_failed")) {
+                        tv.setHint("failed");
                     }
                     break;
+            }
+        }
+    };
+    View.OnFocusChangeListener myClearHint = new View.OnFocusChangeListener() {
+        @Override
+        public void onFocusChange(View view, boolean hasFocus) {
+            if (hasFocus) {
+                EditText et = (EditText) view;
+                et.setHint("parameter value");
             }
         }
     };
@@ -94,12 +103,29 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void onWriteParam(View view) {
+        TextView tv = (TextView)findViewById(R.id.param_name);
+        String param_name = tv.getText().toString();
+        if (param_name.equals("")) return;
+        tv = (TextView)findViewById(R.id.param_val);
+        float param_val;
+        try {
+            param_val = Float.parseFloat(tv.getText().toString());
+        } catch (NumberFormatException e) {
+            return;
+        }
+        tv.setText("");
+        tv.setHint("writing...");
+        mav_work.writeParam(param_name, param_val);
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         ((TextView)findViewById(R.id.status_txt)).setMovementMethod(new ScrollingMovementMethod());
+        findViewById(R.id.param_val).setOnFocusChangeListener(myClearHint);
 
         PipedInputStream mav_work_is = new PipedInputStream();
         PipedOutputStream serial_os = new PipedOutputStream();

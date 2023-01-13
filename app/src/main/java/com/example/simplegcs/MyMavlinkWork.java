@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import io.dronefleet.mavlink.Mavlink2Message;
 import io.dronefleet.mavlink.MavlinkConnection;
@@ -26,6 +27,7 @@ import io.dronefleet.mavlink.common.MavModeFlag;
 import io.dronefleet.mavlink.common.MavParamType;
 import io.dronefleet.mavlink.common.MavType;
 import io.dronefleet.mavlink.common.ParamRequestRead;
+import io.dronefleet.mavlink.common.ParamSet;
 import io.dronefleet.mavlink.common.ParamValue;
 import io.dronefleet.mavlink.common.SetMode;
 import io.dronefleet.mavlink.common.Statustext;
@@ -40,7 +42,7 @@ public class MyMavlinkWork implements Runnable {
     long last_sys_status_ts = 0;
     long last_gps_raw_ts = 0;
     long last_hb_ts = 0;
-    long param_read_sent_ts = 0;
+    long param_rw_sent_ts = 0;
     Runnable chk_disconn = new Runnable() {
         @Override
         public void run() {
@@ -53,11 +55,11 @@ public class MyMavlinkWork implements Runnable {
                         Message ui_msg = ui_handler.obtainMessage(2, "vehicle disconnected " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()));
                         ui_handler.sendMessage(ui_msg);
                     }
-                    if (param_read_sent_ts > 0 && (ts - param_read_sent_ts > 3000)) {
-                        param_read_sent_ts = 0;
+                    if (param_rw_sent_ts > 0 && (ts - param_rw_sent_ts > 3000)) {
+                        param_rw_sent_ts = 0;
                         Message ui_msg = ui_handler.obtainMessage(UI_PARAM_VAL);
                         Bundle data = new Bundle();
-                        data.putString("name", "chobits_read_failed");
+                        data.putString("name", "chobits_param_rw_failed");
                         ui_msg.setData(data);
                         ui_handler.sendMessage(ui_msg);
                     }
@@ -92,9 +94,18 @@ public class MyMavlinkWork implements Runnable {
     }
 
     public void readParam(String name) {
-        param_read_sent_ts = SystemClock.elapsedRealtime();
+        param_rw_sent_ts = SystemClock.elapsedRealtime();
         try {
             mav_conn.send1(255,0, ParamRequestRead.builder().paramId(name).paramIndex(-1).build());
+        } catch (IOException e) {
+            Log.d("chobits", e.getMessage());
+        }
+    }
+
+    public void writeParam(String name, float val) {
+        param_rw_sent_ts = SystemClock.elapsedRealtime();
+        try {
+            mav_conn.send1(255,0, ParamSet.builder().paramId(name).paramValue(val).build());
         } catch (IOException e) {
             Log.d("chobits", e.getMessage());
         }
@@ -179,7 +190,7 @@ public class MyMavlinkWork implements Runnable {
                 Log.d("chobits", "param val " + p_val.paramId() + ":" + p_val.paramValue());
                 Message ui_msg = ui_handler.obtainMessage(UI_PARAM_VAL);
                 Bundle data = new Bundle();
-                data.putString("name", p_val.paramId());
+                data.putString("name", p_val.paramId().toLowerCase());
                 if (p_val.paramType().entry() == MavParamType.MAV_PARAM_TYPE_REAL32) {
                     data.putBoolean("is_float", true);
                     data.putFloat("val", p_val.paramValue());
