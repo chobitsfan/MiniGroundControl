@@ -1,4 +1,4 @@
-package com.example.simplegcs;
+package com.chobitsfan.minigcs;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,18 +11,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.Locale;
 
-import io.dronefleet.mavlink.Mavlink2Message;
 import io.dronefleet.mavlink.MavlinkConnection;
 import io.dronefleet.mavlink.MavlinkMessage;
 import io.dronefleet.mavlink.common.CommandLong;
-import io.dronefleet.mavlink.common.GpsFixType;
 import io.dronefleet.mavlink.common.GpsRawInt;
 import io.dronefleet.mavlink.common.Heartbeat;
 import io.dronefleet.mavlink.common.MavAutopilot;
 import io.dronefleet.mavlink.common.MavCmd;
-import io.dronefleet.mavlink.common.MavMode;
 import io.dronefleet.mavlink.common.MavModeFlag;
 import io.dronefleet.mavlink.common.MavParamType;
 import io.dronefleet.mavlink.common.MavType;

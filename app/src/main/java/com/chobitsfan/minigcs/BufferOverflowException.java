@@ -15,7 +15,7 @@
  *
  * See COPYING.TXT for details.
  */
-package com.example.simplegcs;
+package com.chobitsfan.minigcs;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.example.simplegcs;
+package com.chobitsfan.minigcs;
 
 import android.content.Context;
 
