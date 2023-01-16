@@ -77,7 +77,7 @@ public class MyMavlinkWork implements Runnable {
         try {
             mav_conn.send1(255,0, SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(9).build());
         } catch (IOException e) {
-            Log.d("chobits", e.getMessage());
+            if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
     }
 
@@ -85,7 +85,7 @@ public class MyMavlinkWork implements Runnable {
         try {
             mav_conn.send1(255,0, SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(6).build());
         } catch (IOException e) {
-            Log.d("chobits", e.getMessage());
+            if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
     }
 
@@ -94,7 +94,7 @@ public class MyMavlinkWork implements Runnable {
         try {
             mav_conn.send1(255,0, ParamRequestRead.builder().paramId(name).paramIndex(-1).build());
         } catch (IOException e) {
-            Log.d("chobits", e.getMessage());
+            if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
     }
 
@@ -103,7 +103,7 @@ public class MyMavlinkWork implements Runnable {
         try {
             mav_conn.send1(255,0, ParamSet.builder().paramId(name).paramValue(val).build());
         } catch (IOException e) {
-            Log.d("chobits", e.getMessage());
+            if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
     }
 
@@ -114,7 +114,7 @@ public class MyMavlinkWork implements Runnable {
             try {
                 msg = mav_conn.next();
             } catch (IOException e) {
-                Log.d("chobits", e.getMessage());
+                if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
                 break;
             }
             if (msg == null) break;
@@ -139,7 +139,7 @@ public class MyMavlinkWork implements Runnable {
                 try {
                     mav_conn.send1(255,0,Heartbeat.builder().type(MavType.MAV_TYPE_GCS).autopilot(MavAutopilot.MAV_AUTOPILOT_INVALID).mavlinkVersion(3).build());
                 } catch (IOException e) {
-                    Log.d("chobits", e.getMessage());
+                    if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
                 }
 
                 long ts = SystemClock.elapsedRealtime();
@@ -147,19 +147,19 @@ public class MyMavlinkWork implements Runnable {
                     try {
                         mav_conn.send1(255, 0, CommandLong.builder().command(MavCmd.MAV_CMD_SET_MESSAGE_INTERVAL).param1(1).param2(1000000).build());
                     } catch (IOException e) {
-                        Log.d("chobits", e.getMessage());
+                        if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
                     }
                 }
                 if (ts - last_gps_raw_ts > 3000) {
                     try {
                         mav_conn.send1(255, 0, CommandLong.builder().command(MavCmd.MAV_CMD_SET_MESSAGE_INTERVAL).param1(24).param2(1000000).build());
                     } catch (IOException e) {
-                        Log.d("chobits", e.getMessage());
+                        if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
                     }
                 }
             } else if (msg_payload instanceof Statustext) {
                 Statustext txt = (Statustext)msg_payload;
-                Log.d("chobits", msg.getOriginSystemId() + "," + txt.text());
+                if (MyAppConfig.DEBUG) Log.d("chobits", msg.getOriginSystemId() + "," + txt.text());
                 Message ui_msg = ui_handler.obtainMessage(2, txt.text());
                 //Bundle data = new Bundle();
                 //data.putString("message", txt.text());
@@ -183,7 +183,7 @@ public class MyMavlinkWork implements Runnable {
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof ParamValue) {
                 ParamValue p_val = (ParamValue)msg_payload;
-                Log.d("chobits", "param val " + p_val.paramId() + ":" + p_val.paramValue());
+                if (MyAppConfig.DEBUG) Log.d("chobits", "param val " + p_val.paramId() + ":" + p_val.paramValue());
                 Message ui_msg = ui_handler.obtainMessage(UI_PARAM_VAL);
                 Bundle data = new Bundle();
                 data.putString("name", p_val.paramId().toLowerCase());

@@ -25,13 +25,13 @@ public class MyUSBSerialListener implements SerialInputOutputManager.Listener, R
         try {
             os.write(data);
         } catch (IOException e) {
-            Log.d("chobits", e.getMessage());
+            if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
     }
 
     @Override
     public void onRunError(Exception e) {
-        Log.d("chobits", e.getMessage());
+        if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
     }
 
     @Override
@@ -42,13 +42,13 @@ public class MyUSBSerialListener implements SerialInputOutputManager.Listener, R
             try {
                 len = is.read(buf);
             } catch (IOException e) {
-                Log.d("chobits", e.getMessage());
+                if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
             }
             if (len > 0 && port != null) {
                 try {
                     port.write(Arrays.copyOfRange(buf, 0, len), 500);
                 } catch (IOException e) {
-                    Log.d("chobits", e.getMessage());
+                    if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
                 }
             } else break;
         }

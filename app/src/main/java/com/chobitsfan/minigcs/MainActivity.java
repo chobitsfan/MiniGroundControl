@@ -136,14 +136,14 @@ public class MainActivity extends AppCompatActivity {
         try {
             serial_os.connect(mav_work_is);
         } catch (IOException e) {
-            Log.d("chobits", e.getMessage());
+            if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
         PipedInputStream serial_is = new PipedInputStream();
         PipedOutputStream mav_work_os = new PipedOutputStream();
         try {
             mav_work_os.connect(serial_is);
         } catch (IOException e) {
-            Log.d("chobits", e.getMessage());
+            if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
         mav_work = new MyMavlinkWork(ui_handler, mav_work_is, mav_work_os);
         Thread t1 = new Thread(mav_work);
@@ -182,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
         //tv1.setText(driver.toString());
         UsbDeviceConnection connection = manager.openDevice(driver.getDevice());
         if (connection == null) {
-            Log.d("chobits", "need usb permission");
+            if (MyAppConfig.DEBUG) Log.d("chobits", "need usb permission");
             // add UsbManager.requestPermission(driver.getDevice(), ..) handling here
             PendingIntent p_intent = PendingIntent.getBroadcast(this, 0, new Intent("com.example.simplegcs.USB_PERMISSION"), PendingIntent.FLAG_IMMUTABLE);
             manager.requestPermission(driver.getDevice(), p_intent);
