@@ -129,7 +129,7 @@ public class MyMavlinkWork implements Runnable {
             if (msg_payload instanceof Heartbeat) {
                 // This is a heartbeat message
                 Heartbeat hb = (Heartbeat)msg_payload;
-                Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
+                //Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
                 Message ui_msg = ui_handler.obtainMessage(1, FLIGHT_MODE[(int)hb.customMode()]);
                 ui_handler.sendMessage(ui_msg);
 
@@ -179,7 +179,7 @@ public class MyMavlinkWork implements Runnable {
                 GpsRawInt gps_raw = (GpsRawInt)msg_payload;
                 String txt;
                 if (gps_raw.fixType().value() > 1) {
-                    txt = GPS_FIX_TYPE[gps_raw.fixType().value()] + " HDOP:" + String.format("%0.1f", gps_raw.eph() * 0.01) + " " + gps_raw.satellitesVisible() + " satellites";
+                    txt = GPS_FIX_TYPE[gps_raw.fixType().value()] + " HDOP:" + String.format("%.1f", gps_raw.eph() * 0.01) + " " + gps_raw.satellitesVisible() + " satellites";
                 } else {
                     txt = GPS_FIX_TYPE[gps_raw.fixType().value()];
                 }

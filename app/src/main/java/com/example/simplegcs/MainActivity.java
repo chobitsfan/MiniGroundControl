@@ -69,6 +69,12 @@ public class MainActivity extends AppCompatActivity {
                         }
                     } else if (data.getString("name").equals("chobits_param_rw_failed")) {
                         tv.setHint("failed");
+                        this.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                ((TextView)findViewById(R.id.param_val)).setHint("parameter value");
+                            }
+                        }, 3000);
                     }
                     break;
             }
