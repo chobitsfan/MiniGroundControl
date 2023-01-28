@@ -40,19 +40,19 @@ public class MainActivity extends AppCompatActivity {
             //String result = msg.getData().getString("message");
             //update ui
             switch (msg.what) {
-                case 1:
+                case MyMavlinkWork.UI_FLIGHT_MODE:
                     tv = (TextView)findViewById(R.id.flight_mode);
                     tv.setText((String)msg.obj);
                     break;
-                case 2:
+                case MyMavlinkWork.UI_STATUS_TXT:
                     tv = (TextView)findViewById(R.id.status_txt);
                     tv.append((String)msg.obj+"\n");
                     break;
-                case 3:
+                case MyMavlinkWork.UI_BAT_STATUS:
                     tv = (TextView)findViewById(R.id.bat_status);
                     tv.setText(String.format("%.1f", msg.arg1 * 0.001f)+"V");
                     break;
-                case 4:
+                case MyMavlinkWork.UI_GPS_STATUS:
                     tv = (TextView)findViewById(R.id.gps_status);
                     tv.setText((String)msg.obj);
                     break;
