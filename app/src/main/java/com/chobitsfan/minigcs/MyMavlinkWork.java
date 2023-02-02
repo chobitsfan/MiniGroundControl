@@ -96,7 +96,7 @@ public class MyMavlinkWork implements Runnable {
     public void readParam(String name) {
         param_rw_sent_ts = SystemClock.elapsedRealtime();
         try {
-            mav_conn.send1(255,0, ParamRequestRead.builder().paramId(name).paramIndex(-1).build());
+            mav_conn.send1(255,0, ParamRequestRead.builder().paramId(name.toUpperCase()).paramIndex(-1).build());
         } catch (IOException e) {
             if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
@@ -105,7 +105,7 @@ public class MyMavlinkWork implements Runnable {
     public void writeParam(String name, float val) {
         param_rw_sent_ts = SystemClock.elapsedRealtime();
         try {
-            mav_conn.send1(255,0, ParamSet.builder().paramId(name).paramValue(val).build());
+            mav_conn.send1(255,0, ParamSet.builder().paramId(name.toUpperCase()).paramValue(val).build());
         } catch (IOException e) {
             if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
@@ -190,7 +190,7 @@ public class MyMavlinkWork implements Runnable {
                 if (MyAppConfig.DEBUG) Log.d("chobits", "param val " + p_val.paramId() + ":" + p_val.paramValue());
                 Message ui_msg = ui_handler.obtainMessage(UI_PARAM_VAL);
                 Bundle data = new Bundle();
-                data.putString("name", p_val.paramId().toLowerCase());
+                data.putString("name", p_val.paramId());
                 if (p_val.paramType().entry() == MavParamType.MAV_PARAM_TYPE_REAL32) {
                     data.putBoolean("is_float", true);
                     data.putFloat("val", p_val.paramValue());

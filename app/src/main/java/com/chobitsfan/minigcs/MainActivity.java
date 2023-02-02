@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 case MyMavlinkWork.UI_PARAM_VAL:
                     data = msg.getData();
                     tv = (TextView)findViewById(R.id.param_val);
-                    if (((TextView)findViewById(R.id.param_name)).getText().toString().toLowerCase().equals(data.getString("name"))) {
+                    if (((TextView)findViewById(R.id.param_name)).getText().toString().equalsIgnoreCase(data.getString("name"))) {
                         if (data.getBoolean("is_float")) {
                             tv.setText(Float.toString(data.getFloat("val")));
                         } else {
