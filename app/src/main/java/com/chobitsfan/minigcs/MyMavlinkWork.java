@@ -111,6 +111,14 @@ public class MyMavlinkWork implements Runnable {
         }
     }
 
+    public void rebootFC() {
+        try {
+            mav_conn.send1(255, 0, CommandLong.builder().command(MavCmd.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN).param1(1).build());
+        } catch (IOException e) {
+            if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
+        }
+    }
+
     @Override
     public void run() {
         MavlinkMessage msg;

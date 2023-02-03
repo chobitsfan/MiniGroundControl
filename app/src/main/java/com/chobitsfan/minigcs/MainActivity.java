@@ -11,11 +11,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.os.SystemClock;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     SerialInputOutputManager usbIoManager;
     MyMavlinkWork mav_work;
     MyUSBSerialListener serialListener;
+    long reboot_ts = 0;
     Handler ui_handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -94,6 +97,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void onRTLBtn(View view) {
         mav_work.setModeRTL();
+    }
+
+    public void onRebootBtn(View view) {
+        long ts = SystemClock.elapsedRealtime();
+        if (ts - reboot_ts > 3000) {
+            reboot_ts = ts;
+            Toast.makeText(this, "tap again to reboot FC", Toast.LENGTH_SHORT).show();
+        } else {
+            reboot_ts = 0;
+            mav_work.rebootFC();
+            Toast.makeText(this, "rebooting FC", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void onReadParam(View view) {
