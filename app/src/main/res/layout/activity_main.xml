@@ -35,6 +35,13 @@
             android:text="GPS status"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
+        <TextView
+            android:id="@+id/alt_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Altitude"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+
         <Button
             android:id="@+id/land"
             android:layout_width="match_parent"

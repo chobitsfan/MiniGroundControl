@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ import java.util.Date;
 import io.dronefleet.mavlink.MavlinkConnection;
 import io.dronefleet.mavlink.MavlinkMessage;
 import io.dronefleet.mavlink.common.CommandLong;
+import io.dronefleet.mavlink.common.GlobalPositionInt;
 import io.dronefleet.mavlink.common.GpsRawInt;
 import io.dronefleet.mavlink.common.Heartbeat;
 import io.dronefleet.mavlink.common.MavAutopilot;
@@ -39,8 +41,10 @@ public class MyMavlinkWork implements Runnable {
     public static final int UI_BAT_STATUS = 3;
     public static final int UI_GPS_STATUS = 4;
     public static final int UI_PARAM_VAL = 5;
+    public static final int UI_GLOBAL_POS = 6;
     long last_sys_status_ts = 0;
     long last_gps_raw_ts = 0;
+    long last_global_pos_ts = 0;
     long last_hb_ts = 0;
     long param_rw_sent_ts = 0;
     Runnable chk_disconn = new Runnable() {
@@ -169,6 +173,13 @@ public class MyMavlinkWork implements Runnable {
                         if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
                     }
                 }
+                if (ts - last_global_pos_ts > 3000) {
+                    try {
+                        mav_conn.send1(255, 0, CommandLong.builder().command(MavCmd.MAV_CMD_SET_MESSAGE_INTERVAL).param1(33).param2(1000000).build());
+                    } catch (IOException e) {
+                        if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
+                    }
+                }
             } else if (msg_payload instanceof Statustext) {
                 Statustext txt = (Statustext)msg_payload;
                 if (MyAppConfig.DEBUG) Log.d("chobits", msg.getOriginSystemId() + "," + txt.text());
@@ -192,6 +203,11 @@ public class MyMavlinkWork implements Runnable {
                     txt = GPS_FIX_TYPE[gps_raw.fixType().value()];
                 }
                 Message ui_msg = ui_handler.obtainMessage(UI_GPS_STATUS, txt);
+                ui_handler.sendMessage(ui_msg);
+            } else if (msg_payload instanceof GlobalPositionInt) {
+                last_global_pos_ts = SystemClock.elapsedRealtime();
+                GlobalPositionInt global_pos = (GlobalPositionInt)msg_payload;
+                Message ui_msg = ui_handler.obtainMessage(UI_GLOBAL_POS, global_pos.alt(), global_pos.relativeAlt());
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof ParamValue) {
                 ParamValue p_val = (ParamValue)msg_payload;
