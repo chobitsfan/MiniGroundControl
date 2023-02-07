@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case MyMavlinkWork.UI_GLOBAL_POS:
                     tv = (TextView)findViewById(R.id.alt_status);
-                    tv.setText("Altitude "+Math.round(msg.arg1*0.0001)+"m MSL, "+Math.round(msg.arg1*0.0001)+"m above ground");
+                    tv.setText(String.format("Altitude %.1fm MSL, %.1fm above ground", msg.arg1*0.001, msg.arg2*0.001));
                     break;
             }
         }
