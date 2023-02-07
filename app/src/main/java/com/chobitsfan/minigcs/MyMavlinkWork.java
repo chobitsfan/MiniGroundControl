@@ -34,7 +34,7 @@ import io.dronefleet.mavlink.common.SysStatus;
 public class MyMavlinkWork implements Runnable {
     MavlinkConnection mav_conn;
     Handler ui_handler;
-    static String[] FLIGHT_MODE = {"STABILIZE", "ACRO", "ALT_HOLD", "AUTO", "GUIDED", "LOITER", "RTL", "CIRCLE", "POSITION", "LAND"};
+    static String[] FLIGHT_MODE = {"STABILIZE", "ACRO", "ALT_HOLD", "AUTO", "GUIDED", "LOITER", "RTL", "CIRCLE", "", "LAND", "", "DRIFT", "", "SPORT", "FLIP", "AUTOTUNE", "POSHOLD", "BRAKE", "THROW", "AVOID_ADSB", "GUIDED_NOGPS", "SMART_RTL"};
     static String[] GPS_FIX_TYPE = {"No GPS", "No Fix", "2D Fix", "3D Fix", "DGPS", "RTK Float", "RTK Fix"};
     public static final int UI_FLIGHT_MODE = 1;
     public static final int UI_STATUS_TXT = 2;
@@ -142,7 +142,10 @@ public class MyMavlinkWork implements Runnable {
                 // This is a heartbeat message
                 Heartbeat hb = (Heartbeat)msg_payload;
                 //Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
-                Message ui_msg = ui_handler.obtainMessage(UI_FLIGHT_MODE, FLIGHT_MODE[(int)hb.customMode()]);
+                int customMode = (int) hb.customMode();
+                String flightMode;
+                if (customMode >= FLIGHT_MODE.length) flightMode = "Mode " + customMode; else flightMode = FLIGHT_MODE[customMode];
+                Message ui_msg = ui_handler.obtainMessage(UI_FLIGHT_MODE, flightMode);
                 ui_handler.sendMessage(ui_msg);
 
                 if (last_hb_ts == 0) {
