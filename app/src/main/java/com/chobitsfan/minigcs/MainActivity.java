@@ -82,6 +82,10 @@ public class MainActivity extends AppCompatActivity {
                     tv = (TextView)findViewById(R.id.alt_status);
                     tv.setText(String.format("Altitude %.1fm MSL, %.1fm above ground", msg.arg1*0.001, msg.arg2*0.001));
                     break;
+                case MyMavlinkWork.UI_AP_NAME:
+                    tv = (TextView)findViewById(R.id.ap_name);
+                    tv.setText((String)msg.obj);
+                    break;
             }
         }
     };

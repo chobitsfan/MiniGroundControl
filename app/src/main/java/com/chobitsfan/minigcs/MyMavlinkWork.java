@@ -34,7 +34,7 @@ import io.dronefleet.mavlink.common.SysStatus;
 public class MyMavlinkWork implements Runnable {
     MavlinkConnection mav_conn;
     Handler ui_handler;
-    static String[] FLIGHT_MODE = {"STABILIZE", "ACRO", "ALT_HOLD", "AUTO", "GUIDED", "LOITER", "RTL", "CIRCLE", "", "LAND", "", "DRIFT", "", "SPORT", "FLIP", "AUTOTUNE", "POSHOLD", "BRAKE", "THROW", "AVOID_ADSB", "GUIDED_NOGPS", "SMART_RTL"};
+    Vehicle vehicle = null;
     static String[] GPS_FIX_TYPE = {"No GPS", "No Fix", "2D Fix", "3D Fix", "DGPS", "RTK Float", "RTK Fix"};
     public static final int UI_FLIGHT_MODE = 1;
     public static final int UI_STATUS_TXT = 2;
@@ -42,6 +42,7 @@ public class MyMavlinkWork implements Runnable {
     public static final int UI_GPS_STATUS = 4;
     public static final int UI_PARAM_VAL = 5;
     public static final int UI_GLOBAL_POS = 6;
+    public static final int UI_AP_NAME = 7;
     long last_sys_status_ts = 0;
     long last_gps_raw_ts = 0;
     long last_global_pos_ts = 0;
@@ -83,7 +84,7 @@ public class MyMavlinkWork implements Runnable {
 
     public void setModeLand() {
         try {
-            mav_conn.send1(255,0, SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(9).build());
+            mav_conn.send1(255,0, vehicle.Land());
         } catch (IOException e) {
             if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
@@ -91,7 +92,7 @@ public class MyMavlinkWork implements Runnable {
 
     public void setModeRTL() {
         try {
-            mav_conn.send1(255,0, SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(6).build());
+            mav_conn.send1(255,0, vehicle.RTL());
         } catch (IOException e) {
             if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
@@ -141,11 +142,14 @@ public class MyMavlinkWork implements Runnable {
             if (msg_payload instanceof Heartbeat) {
                 // This is a heartbeat message
                 Heartbeat hb = (Heartbeat)msg_payload;
+                if (hb.autopilot().entry() == MavAutopilot.MAV_AUTOPILOT_INVALID) continue;
                 //Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
-                int customMode = (int) hb.customMode();
-                String flightMode;
-                if (customMode >= FLIGHT_MODE.length) flightMode = "Mode " + customMode; else flightMode = FLIGHT_MODE[customMode];
-                Message ui_msg = ui_handler.obtainMessage(UI_FLIGHT_MODE, flightMode);
+                if (vehicle == null) {
+                    vehicle = Vehicle.Init(hb.autopilot().entry(), hb.type().entry());
+                    Message ui_msg = ui_handler.obtainMessage(UI_AP_NAME, vehicle.Name());
+                    ui_handler.sendMessage(ui_msg);
+                }
+                Message ui_msg = ui_handler.obtainMessage(UI_FLIGHT_MODE, vehicle.Mode((int)hb.customMode()));
                 ui_handler.sendMessage(ui_msg);
 
                 if (last_hb_ts == 0) {
