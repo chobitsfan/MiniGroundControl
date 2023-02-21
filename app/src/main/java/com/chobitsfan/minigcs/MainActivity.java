@@ -180,7 +180,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         if (port != null) {
             try {
                 port.close();
@@ -188,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+        super.onDestroy();
     }
 
     void detectMyDevice() {
