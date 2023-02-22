@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
@@ -53,11 +54,16 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case MyMavlinkWork.UI_BAT_STATUS:
                     tv = (TextView)findViewById(R.id.bat_status);
-                    tv.setText(String.format("%.1f", msg.arg1 * 0.001f)+"V");
+                    tv.setText(Html.fromHtml(String.format("<small>Battery</small><br><big><b>%.1f</b></big><small>v</small>", msg.arg1*0.001), Html.FROM_HTML_MODE_COMPACT));
                     break;
                 case MyMavlinkWork.UI_GPS_STATUS:
+                    data = msg.getData();
                     tv = (TextView)findViewById(R.id.gps_status);
-                    tv.setText((String)msg.obj);
+                    tv.setText(Html.fromHtml("<small>GPS</small><br><big><b>"+data.getString("fix")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));
+                    tv = (TextView)findViewById(R.id.gps_hdop);
+                    tv.setText(Html.fromHtml("<small>HDOP</small><br><big><b>"+data.getString("hdop")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));
+                    tv = (TextView)findViewById(R.id.gps_satellites);
+                    tv.setText(Html.fromHtml("<small>Satellites</small><br><big><b>"+data.getInt("satellites")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));
                     break;
                 case MyMavlinkWork.UI_PARAM_VAL:
                     data = msg.getData();
@@ -80,7 +86,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case MyMavlinkWork.UI_GLOBAL_POS:
                     tv = (TextView)findViewById(R.id.alt_status);
-                    tv.setText(String.format("Altitude %.1fm MSL, %.1fm above ground", msg.arg1*0.001, msg.arg2*0.001));
+                    tv.setText(Html.fromHtml(String.format("<small>Altitude</small><br><big><b>%.1f</b></big><small>m</small>", msg.arg2*0.001), Html.FROM_HTML_MODE_COMPACT));
+                    tv = (TextView)findViewById(R.id.alt_msl_status);
+                    tv.setText(Html.fromHtml(String.format("<small>Altitude MSL</small><br><big><b>%.1f</b></big><small>m</small>", msg.arg1*0.001), Html.FROM_HTML_MODE_COMPACT));
                     break;
                 case MyMavlinkWork.UI_AP_NAME:
                     tv = (TextView)findViewById(R.id.ap_name);

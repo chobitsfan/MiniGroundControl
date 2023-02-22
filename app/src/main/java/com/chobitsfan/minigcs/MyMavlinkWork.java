@@ -203,13 +203,12 @@ public class MyMavlinkWork implements Runnable {
             } else if (msg_payload instanceof GpsRawInt) {
                 last_gps_raw_ts = SystemClock.elapsedRealtime();
                 GpsRawInt gps_raw = (GpsRawInt)msg_payload;
-                String txt;
-                if (gps_raw.fixType().value() > 1) {
-                    txt = GPS_FIX_TYPE[gps_raw.fixType().value()] + " HDOP:" + String.format("%.1f", gps_raw.eph() * 0.01) + " " + gps_raw.satellitesVisible() + " satellites";
-                } else {
-                    txt = GPS_FIX_TYPE[gps_raw.fixType().value()];
-                }
-                Message ui_msg = ui_handler.obtainMessage(UI_GPS_STATUS, txt);
+                Bundle data = new Bundle();
+                data.putString("fix", GPS_FIX_TYPE[gps_raw.fixType().value()]);
+                data.putString("hdop", String.format("%.1f", gps_raw.eph() * 0.01));
+                data.putInt("satellites", gps_raw.satellitesVisible());
+                Message ui_msg = ui_handler.obtainMessage(UI_GPS_STATUS);
+                ui_msg.setData(data);
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof GlobalPositionInt) {
                 last_global_pos_ts = SystemClock.elapsedRealtime();
