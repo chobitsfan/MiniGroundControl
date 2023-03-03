@@ -20,6 +20,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hoho.android.usbserial.driver.CdcAcmSerialDriver;
+import com.hoho.android.usbserial.driver.ProbeTable;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
 import com.hoho.android.usbserial.driver.UsbSerialPort;
 import com.hoho.android.usbserial.driver.UsbSerialProber;
@@ -203,7 +205,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Find all available drivers from attached devices.
         UsbManager manager = (UsbManager)getSystemService(Context.USB_SERVICE);
-        List<UsbSerialDriver> availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager);
+        ProbeTable myProbeTable = UsbSerialProber.getDefaultProbeTable();
+        myProbeTable.addProduct(0x1209, 0x5741, CdcAcmSerialDriver.class); // ardupilot fc
+        UsbSerialProber myProber = new UsbSerialProber(myProbeTable);
+        List<UsbSerialDriver> availableDrivers = myProber.findAllDrivers(manager);
         if (availableDrivers.isEmpty()) {
             return;
         }
