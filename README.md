@@ -1,6 +1,6 @@
 # MiniGroundControl
 
-MiniGroundControl is a simple ground control station for ArduPilot powered UAVs. It is not a full-featured GCS like Mission Planner or QGroundControl. The goal of this project is to create a simple, enough for casual flight GCS designed specifically for phones. While Mission Planner and QGroundControl are powerful, their UI are designed for PC and may not be easy to use on phones. To use MiniGroundControl, you need a Android phone, a USB OTG type-c adapter and a SiK Telemetry Radio. 
+MiniGroundControl is a simple ground control station for ArduPilot powered UAVs. It is not a full-featured GCS like Mission Planner or QGroundControl. The goal of this project is to create a simple, enough for casual flight GCS designed specifically for phones. While Mission Planner and QGroundControl are powerful, their UI are designed for PC and may not be easy to use on phones. To use MiniGroundControl, you need a Android phone, a USB OTG adapter and a SiK Telemetry Radio or directly connect to your flight controller (tested on Pixhawk, Kakute H7 and CubeOrange). 
 
 This project uses mik3y's [usb-serial-for-android](https://github.com/mik3y/usb-serial-for-android) and dronefleet's [MAVLink SDK](https://github.com/dronefleet/mavlink)
 
