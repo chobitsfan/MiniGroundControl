@@ -189,15 +189,13 @@ public class MyMavlinkWork implements Runnable {
                 Statustext txt = (Statustext)msg_payload;
                 if (MyAppConfig.DEBUG) Log.d("chobits", msg.getOriginSystemId() + "," + txt.text());
                 int severity = 0;
+                String text = txt.text();
                 if (txt.severity().entry().ordinal() < 5) severity = 1;
-                else if (txt.text().startsWith("PrecLand")) {
+                else if (text.startsWith("PrecLand")) {
                     severity = 1;
-                    txt.text().replace("PrecLand", "precision land");
+                    text = text.replace("PrecLand", "precision landing");
                 }
-                Message ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, severity, 0,  txt.text());
-                //Bundle data = new Bundle();
-                //data.putString("message", txt.text());
-                //ui_msg.setData(data);
+                Message ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, severity, 0,  text);
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof SysStatus) {
                 last_sys_status_ts = SystemClock.elapsedRealtime();
