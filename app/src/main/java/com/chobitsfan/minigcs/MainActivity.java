@@ -12,6 +12,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
+import android.speech.tts.TextToSpeech;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -31,13 +32,15 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.List;
+import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
     UsbSerialPort port = null;
     SerialInputOutputManager usbIoManager;
     MyMavlinkWork mav_work;
     MyUSBSerialListener serialListener;
     long reboot_ts = 0;
+    TextToSpeech tts;
     Handler ui_handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
                 case MyMavlinkWork.UI_STATUS_TXT:
                     tv = (TextView)findViewById(R.id.status_txt);
                     tv.append((String)msg.obj+"\n");
+                    if (msg.arg1 > 0) tts.speak((String)msg.obj, TextToSpeech.QUEUE_ADD, null);
                     break;
                 case MyMavlinkWork.UI_BAT_STATUS:
                     tv = (TextView)findViewById(R.id.bat_status);
@@ -161,6 +165,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        tts = new TextToSpeech(this, this);
+
         ((TextView)findViewById(R.id.status_txt)).setMovementMethod(new ScrollingMovementMethod());
         findViewById(R.id.param_val).setOnFocusChangeListener(myClearHint);
 
@@ -239,5 +245,12 @@ public class MainActivity extends AppCompatActivity {
         serialListener.port = port;
         usbIoManager = new SerialInputOutputManager(port, serialListener);
         usbIoManager.start();
+    }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+           tts.setLanguage(Locale.US);
+        }
     }
 }
