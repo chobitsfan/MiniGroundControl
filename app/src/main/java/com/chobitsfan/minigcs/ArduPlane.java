@@ -5,6 +5,11 @@ import io.dronefleet.mavlink.common.SetMode;
 
 public class ArduPlane extends Vehicle {
     String[] FLIGHT_MODE = {"MANUAL", "CIRCLE", "STABILIZE", "TRAINING", "ACRO", "FBWA", "FBWB", "CRUISE", "AUTOTUNE", "", "AUTO", "RTL", "LOITER", "TAKEOFF", "AVOID_ADSB", "GUIDED"};
+    static ArduPlane instance = new ArduPlane();
+
+    public static ArduPlane getInstance() {
+        return instance;
+    }
 
     @Override
     public String Mode(int customMode) {

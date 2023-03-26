@@ -34,7 +34,7 @@ import io.dronefleet.mavlink.common.SysStatus;
 public class MyMavlinkWork implements Runnable {
     MavlinkConnection mav_conn;
     Handler ui_handler;
-    Vehicle vehicle = null;
+    Vehicle vehicle = Vehicle.getInstance(MavAutopilot.MAV_AUTOPILOT_ARDUPILOTMEGA, MavType.MAV_TYPE_QUADROTOR);
     static String[] GPS_FIX_TYPE = {"No GPS", "No Fix", "2D Fix", "3D Fix", "DGPS", "RTK Float", "RTK Fix"};
     public static final int UI_FLIGHT_MODE = 1;
     public static final int UI_STATUS_TXT = 2;
@@ -144,12 +144,10 @@ public class MyMavlinkWork implements Runnable {
                 Heartbeat hb = (Heartbeat)msg_payload;
                 if (hb.autopilot().entry() == MavAutopilot.MAV_AUTOPILOT_INVALID) continue;
                 //Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
-                if (vehicle == null) {
-                    vehicle = Vehicle.Init(hb.autopilot().entry(), hb.type().entry());
-                    Message ui_msg = ui_handler.obtainMessage(UI_AP_NAME, vehicle.Name());
-                    ui_handler.sendMessage(ui_msg);
-                }
-                Message ui_msg = ui_handler.obtainMessage(UI_FLIGHT_MODE, vehicle.Mode((int)hb.customMode()));
+                vehicle = Vehicle.getInstance(hb.autopilot().entry(), hb.type().entry());
+                Message ui_msg = ui_handler.obtainMessage(UI_AP_NAME, vehicle.Name());
+                ui_handler.sendMessage(ui_msg);
+                ui_msg = ui_handler.obtainMessage(UI_FLIGHT_MODE, vehicle.Mode((int)hb.customMode()));
                 ui_handler.sendMessage(ui_msg);
 
                 if (last_hb_ts == 0) {
