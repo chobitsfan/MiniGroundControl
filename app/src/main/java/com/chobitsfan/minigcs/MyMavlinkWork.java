@@ -24,6 +24,7 @@ import io.dronefleet.mavlink.common.MavCmd;
 import io.dronefleet.mavlink.common.MavModeFlag;
 import io.dronefleet.mavlink.common.MavParamType;
 import io.dronefleet.mavlink.common.MavType;
+import io.dronefleet.mavlink.common.MissionItemReached;
 import io.dronefleet.mavlink.common.ParamRequestRead;
 import io.dronefleet.mavlink.common.ParamSet;
 import io.dronefleet.mavlink.common.ParamValue;
@@ -191,10 +192,7 @@ public class MyMavlinkWork implements Runnable {
                 int severity = 0;
                 String text = txt.text();
                 if (txt.severity().entry().ordinal() < 5) severity = 1;
-                else if (text.startsWith("PrecLand")) {
-                    severity = 1;
-                    text = text.replace("PrecLand", "precision landing");
-                }
+                else if (text.startsWith("PrecLand")) severity = 1;
                 Message ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, severity, 0,  text);
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof SysStatus) {
@@ -231,6 +229,9 @@ public class MyMavlinkWork implements Runnable {
                     data.putInt("val", (int)p_val.paramValue());
                 }
                 ui_msg.setData(data);
+                ui_handler.sendMessage(ui_msg);
+            } else if (msg_payload instanceof MissionItemReached) {
+                Message ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, 1, 0,  "Waypoint reached");
                 ui_handler.sendMessage(ui_msg);
             } else {
                 //Log.d("chobits", msg.getPayload().getClass().getSimpleName());
