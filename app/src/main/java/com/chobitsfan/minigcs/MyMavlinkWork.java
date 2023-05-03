@@ -49,6 +49,7 @@ public class MyMavlinkWork implements Runnable {
     long last_global_pos_ts = 0;
     long last_hb_ts = 0;
     long param_rw_sent_ts = 0;
+    int prv_flight_mode = -1;
     Runnable chk_disconn = new Runnable() {
         @Override
         public void run() {
@@ -148,8 +149,14 @@ public class MyMavlinkWork implements Runnable {
                 vehicle = Vehicle.getInstance(hb.autopilot().entry(), hb.type().entry());
                 Message ui_msg = ui_handler.obtainMessage(UI_AP_NAME, vehicle.Name());
                 ui_handler.sendMessage(ui_msg);
-                ui_msg = ui_handler.obtainMessage(UI_FLIGHT_MODE, vehicle.Mode((int)hb.customMode()));
+                int flight_mode = (int)hb.customMode();
+                ui_msg = ui_handler.obtainMessage(UI_FLIGHT_MODE, vehicle.Mode(flight_mode));
                 ui_handler.sendMessage(ui_msg);
+                if (flight_mode != prv_flight_mode) {
+                    ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, 1, 1,  "flight mode " + vehicle.Mode(flight_mode));
+                    ui_handler.sendMessage(ui_msg);
+                    prv_flight_mode = flight_mode;
+                }
 
                 if (last_hb_ts == 0) {
                     ui_msg = ui_handler.obtainMessage(2, "vehicle " + msg.getOriginSystemId() + " connected " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()));

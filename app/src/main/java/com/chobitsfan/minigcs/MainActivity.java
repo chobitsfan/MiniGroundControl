@@ -54,8 +54,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                     tv.setText((String)msg.obj);
                     break;
                 case MyMavlinkWork.UI_STATUS_TXT:
-                    tv = (TextView)findViewById(R.id.status_txt);
-                    tv.append((String)msg.obj+"\n");
+                    if (msg.arg2 == 0) {
+                        tv = (TextView) findViewById(R.id.status_txt);
+                        tv.append((String) msg.obj + "\n");
+                    }
                     if (msg.arg1 > 0) tts.speak((String)msg.obj, TextToSpeech.QUEUE_ADD, null);
                     break;
                 case MyMavlinkWork.UI_BAT_STATUS:
