@@ -21,9 +21,16 @@ public class ArduCopter extends Vehicle {
         return SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(9).build();
     }
 
-    @Override
-    public Object RTL() {
-        return SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(6).build();
+    public Object Guided(){
+        return SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(4).build();
+    }
+
+    public Object Auto(){
+        return SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(3).build();
+    }
+
+    public Object Stabilize(){
+        return SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(0).build();
     }
 
     @Override
