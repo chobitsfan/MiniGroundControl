@@ -1,6 +1,7 @@
 package com.chobitsfan.minigcs;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -41,26 +42,27 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     MyUSBSerialListener serialListener;
     long reboot_ts = 0;
     TextToSpeech tts;
+    private StatusViewModel viewModel;
     Handler ui_handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
-            TextView tv;
+            //TextView tv;
             Bundle data;
-            //String result = msg.getData().getString("message");
+            String result = msg.getData().getString("message");
             //update ui
             switch (msg.what) {
                 case MyMavlinkWork.UI_FLIGHT_MODE:
-                    tv = (TextView)findViewById(R.id.flight_mode);
-                    tv.setText((String)msg.obj);
+                    viewModel.setFlightMode((String)msg.obj);
                     break;
                 case MyMavlinkWork.UI_STATUS_TXT:
-                    if (msg.arg2 == 0) {
+                    if (msg.arg2 == 0) viewModel.setStatusTxt((String)msg.obj);
+                    /*if (msg.arg2 == 0) {
                         tv = (TextView) findViewById(R.id.status_txt);
                         tv.append((String) msg.obj + "\n");
                     }
-                    if (msg.arg1 > 0) tts.speak((String)msg.obj, TextToSpeech.QUEUE_ADD, null);
+                    if (msg.arg1 > 0) tts.speak((String)msg.obj, TextToSpeech.QUEUE_ADD, null);*/
                     break;
-                case MyMavlinkWork.UI_BAT_STATUS:
+                /*case MyMavlinkWork.UI_BAT_STATUS:
                     tv = (TextView)findViewById(R.id.bat_status);
                     tv.setText(Html.fromHtml(String.format("<small>Battery</small><br><big><b>%.1f</b></big><small>v</small>", msg.arg1*0.001), Html.FROM_HTML_MODE_COMPACT));
                     break;
@@ -101,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 case MyMavlinkWork.UI_AP_NAME:
                     tv = (TextView)findViewById(R.id.ap_name);
                     tv.setText((String)msg.obj);
-                    break;
+                    break;*/
             }
         }
     };
@@ -136,18 +138,18 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     }
 
     public void onReadParam(View view) {
-        TextView tv = (TextView)findViewById(R.id.param_name);
+        /*TextView tv = (TextView)findViewById(R.id.param_name);
         String param_name = tv.getText().toString();
         if (!param_name.equals("")) {
             tv = (TextView)findViewById(R.id.param_val);
             tv.setText("");
             tv.setHint("reading...");
             mav_work.readParam(param_name);
-        }
+        }*/
     }
 
     public void onWriteParam(View view) {
-        TextView tv = (TextView)findViewById(R.id.param_name);
+        /*TextView tv = (TextView)findViewById(R.id.param_name);
         String param_name = tv.getText().toString();
         if (param_name.equals("")) return;
         tv = (TextView)findViewById(R.id.param_val);
@@ -159,18 +161,19 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
         tv.setText("");
         tv.setHint("writing...");
-        mav_work.writeParam(param_name, param_val);
+        mav_work.writeParam(param_name, param_val);*/
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        viewModel = new ViewModelProvider(this).get(StatusViewModel.class);
 
         tts = new TextToSpeech(this, this);
 
-        ((TextView)findViewById(R.id.status_txt)).setMovementMethod(new ScrollingMovementMethod());
-        findViewById(R.id.param_val).setOnFocusChangeListener(myClearHint);
+        //((TextView)findViewById(R.id.status_txt)).setMovementMethod(new ScrollingMovementMethod());
+        //findViewById(R.id.param_val).setOnFocusChangeListener(myClearHint);
 
         PipedInputStream mav_work_is = new PipedInputStream();
         PipedOutputStream serial_os = new PipedOutputStream();

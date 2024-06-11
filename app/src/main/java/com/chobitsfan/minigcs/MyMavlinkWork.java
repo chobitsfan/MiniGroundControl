@@ -159,7 +159,7 @@ public class MyMavlinkWork implements Runnable {
                 }
 
                 if (last_hb_ts == 0) {
-                    ui_msg = ui_handler.obtainMessage(2, "vehicle " + msg.getOriginSystemId() + " connected " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()));
+                    ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, "vehicle " + msg.getOriginSystemId() + " connected " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()));
                     ui_handler.sendMessage(ui_msg);
                 }
                 last_hb_ts = SystemClock.elapsedRealtime();
