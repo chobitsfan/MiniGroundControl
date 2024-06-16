@@ -32,11 +32,11 @@ public class StatusFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mViewModel = new ViewModelProvider(requireActivity()).get(StatusViewModel.class);
 
-        mViewModel.getFlightMode().observe(requireActivity(), mode-> {
+        mViewModel.getFlightMode().observe(getViewLifecycleOwner(), mode-> {
             TextView tv = requireActivity().findViewById(R.id.flight_mode);
             tv.setText(mode);
         });
-        mViewModel.getStatusTxt().observe(requireActivity(), txt->{
+        mViewModel.getStatusTxt().observe(getViewLifecycleOwner(), txt->{
             TextView tv = requireActivity().findViewById(R.id.status_txt);
             tv.setText(txt);
         });

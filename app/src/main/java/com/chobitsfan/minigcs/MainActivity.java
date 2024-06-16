@@ -1,5 +1,6 @@
 package com.chobitsfan.minigcs;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -17,11 +18,15 @@ import android.speech.tts.TextToSpeech;
 import android.text.Html;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.hoho.android.usbserial.driver.CdcAcmSerialDriver;
 import com.hoho.android.usbserial.driver.ProbeTable;
 import com.hoho.android.usbserial.driver.UsbSerialDriver;
@@ -35,7 +40,7 @@ import java.io.PipedOutputStream;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, BottomNavigationView.OnNavigationItemSelectedListener {
     UsbSerialPort port = null;
     SerialInputOutputManager usbIoManager;
     MyMavlinkWork mav_work;
@@ -43,6 +48,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     long reboot_ts = 0;
     TextToSpeech tts;
     private StatusViewModel viewModel;
+    StatusFragment statusFragment = new StatusFragment();
+    MapsFragment mapsFragment = new MapsFragment();
     Handler ui_handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -107,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         }
     };
-    View.OnFocusChangeListener myClearHint = new View.OnFocusChangeListener() {
+    /*View.OnFocusChangeListener myClearHint = new View.OnFocusChangeListener() {
         @Override
         public void onFocusChange(View view, boolean hasFocus) {
             if (hasFocus) {
@@ -115,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 et.setHint("parameter value");
             }
         }
-    };
+    };*/
 
     public void onLandBtn(View view) {
         mav_work.setModeLand();
@@ -169,6 +176,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewModel = new ViewModelProvider(this).get(StatusViewModel.class);
+        BottomNavigationView bottomNavigationView = findViewById(R.id.nav_menu_view);
+        bottomNavigationView.setOnNavigationItemSelectedListener(this);
 
         tts = new TextToSpeech(this, this);
 
@@ -257,5 +266,18 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         if (status == TextToSpeech.SUCCESS) {
            tts.setLanguage(Locale.US);
         }
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int itemId = item.getItemId();
+        if (itemId == R.id.menu_home) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_view, statusFragment).commit();
+            return true;
+        } else if (itemId == R.id.menu_map) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_view, mapsFragment).commit();
+            return true;
+        }
+        return false;
     }
 }
