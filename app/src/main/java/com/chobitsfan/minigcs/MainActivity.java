@@ -40,6 +40,8 @@ import java.io.PipedOutputStream;
 import java.util.List;
 import java.util.Locale;
 
+import io.dronefleet.mavlink.common.GlobalPositionInt;
+
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, BottomNavigationView.OnNavigationItemSelectedListener {
     UsbSerialPort port = null;
     SerialInputOutputManager usbIoManager;
@@ -68,6 +70,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                         tv.append((String) msg.obj + "\n");
                     }
                     if (msg.arg1 > 0) tts.speak((String)msg.obj, TextToSpeech.QUEUE_ADD, null);*/
+                    break;
+                case MyMavlinkWork.UI_GLOBAL_POS:
+                    viewModel.setGlobalPos((GlobalPositionInt)msg.obj);
                     break;
                 /*case MyMavlinkWork.UI_BAT_STATUS:
                     tv = (TextView)findViewById(R.id.bat_status);

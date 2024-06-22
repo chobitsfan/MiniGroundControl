@@ -220,7 +220,8 @@ public class MyMavlinkWork implements Runnable {
             } else if (msg_payload instanceof GlobalPositionInt) {
                 last_global_pos_ts = SystemClock.elapsedRealtime();
                 GlobalPositionInt global_pos = (GlobalPositionInt)msg_payload;
-                Message ui_msg = ui_handler.obtainMessage(UI_GLOBAL_POS, global_pos.alt(), global_pos.relativeAlt());
+                //Message ui_msg = ui_handler.obtainMessage(UI_GLOBAL_POS, new GlobalPos(global_pos));
+                Message ui_msg = ui_handler.obtainMessage(UI_GLOBAL_POS, global_pos);
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof ParamValue) {
                 ParamValue p_val = (ParamValue)msg_payload;

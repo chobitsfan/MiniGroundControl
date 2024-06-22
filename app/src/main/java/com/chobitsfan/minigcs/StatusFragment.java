@@ -40,6 +40,10 @@ public class StatusFragment extends Fragment {
             TextView tv = requireActivity().findViewById(R.id.status_txt);
             tv.setText(txt);
         });
+        mViewModel.getGlobalPos().observe(getViewLifecycleOwner(), pos -> {
+            TextView tv = requireActivity().findViewById(R.id.msl_alt);
+            tv.setText(Integer.toString(pos.alt()));
+        });
     }
 
 }
