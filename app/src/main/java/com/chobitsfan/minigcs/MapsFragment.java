@@ -10,12 +10,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
@@ -39,6 +40,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     //};
     StatusViewModel mViewModel;
     GoogleMap googleMap = null;
+    Marker droneMarker = null;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -57,15 +59,27 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mViewModel = new ViewModelProvider(requireActivity()).get(StatusViewModel.class);
         mViewModel.getGlobalPos().observe(getViewLifecycleOwner(), pos->{
             if (googleMap != null) {
-                LatLng drone_latlng = new LatLng(pos.lat()*1e-7, pos.lon()*1e-7);
-                googleMap.addMarker(new MarkerOptions().position(drone_latlng).title("drone"));
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(drone_latlng, 18));
+                int lat = pos.lat();
+                int lon = pos.lon();
+                if (lat > 0 &&  lon > 0) {
+                    LatLng droneLatlng = new LatLng(lat * 1e-7, lon * 1e-7);
+                    if (droneMarker == null) {
+                        droneMarker = googleMap.addMarker(new MarkerOptions().position(droneLatlng).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_arrow)));
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(droneLatlng, 18));
+                    } else {
+                        droneMarker.setPosition(droneLatlng);
+                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(droneLatlng));
+                    }
+                }
             }
         });
     }
 
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+        googleMap.moveCamera(CameraUpdateFactory.zoomTo(18));
+        droneMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(24.7741608,121.044659)).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_arrow)));
         this.googleMap = googleMap;
     }
 }
