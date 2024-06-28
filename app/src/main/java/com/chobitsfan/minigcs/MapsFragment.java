@@ -19,6 +19,8 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import io.dronefleet.mavlink.common.GlobalPositionInt;
+
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     //private OnMapReadyCallback callback = new OnMapReadyCallback() {
@@ -78,8 +80,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-        googleMap.moveCamera(CameraUpdateFactory.zoomTo(18));
-        droneMarker = googleMap.addMarker(new MarkerOptions().position(new LatLng(24.7741608,121.044659)).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_arrow)));
+        GlobalPositionInt dronePos = mViewModel.getGlobalPos().getValue();
+        if (dronePos != null) {
+            int lat = dronePos.lat();
+            int lon = dronePos.lon();
+            if (lat > 0 && lon > 0) {
+                LatLng droneLatlng = new LatLng(lat * 1e-7, lon * 1e-7);
+                droneMarker = googleMap.addMarker(new MarkerOptions().position(droneLatlng).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_arrow)));
+                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(droneLatlng, 18));
+            }
+        }
         this.googleMap = googleMap;
     }
 }
