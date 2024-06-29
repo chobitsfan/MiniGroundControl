@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/flight_mode"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:text="flight mode" />
     <TextView
         android:layout_width="match_parent"

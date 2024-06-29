@@ -66,10 +66,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 if (lat > 0 &&  lon > 0) {
                     LatLng droneLatlng = new LatLng(lat * 1e-7, lon * 1e-7);
                     if (droneMarker == null) {
-                        droneMarker = googleMap.addMarker(new MarkerOptions().position(droneLatlng).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_arrow)));
+                        droneMarker = googleMap.addMarker(new MarkerOptions().anchor(0.5f,0.5f).flat(true).rotation(pos.hdg()).position(droneLatlng).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_arrow)));
                         googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(droneLatlng, 18));
                     } else {
                         droneMarker.setPosition(droneLatlng);
+                        droneMarker.setRotation(pos.hdg());
                         googleMap.moveCamera(CameraUpdateFactory.newLatLng(droneLatlng));
                     }
                 }
@@ -86,7 +87,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             int lon = dronePos.lon();
             if (lat > 0 && lon > 0) {
                 LatLng droneLatlng = new LatLng(lat * 1e-7, lon * 1e-7);
-                droneMarker = googleMap.addMarker(new MarkerOptions().position(droneLatlng).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_arrow)));
+                droneMarker = googleMap.addMarker(new MarkerOptions().anchor(0.5f,0.5f).flat(true).position(droneLatlng).rotation(dronePos.hdg()).icon(BitmapDescriptorFactory.fromResource(R.drawable.drone_arrow)));
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(droneLatlng, 18));
             }
         }
