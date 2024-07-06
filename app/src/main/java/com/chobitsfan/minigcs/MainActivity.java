@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Locale;
 
 import io.dronefleet.mavlink.common.GlobalPositionInt;
+import io.dronefleet.mavlink.common.GpsRawInt;
+import io.dronefleet.mavlink.common.Heartbeat;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, BottomNavigationView.OnNavigationItemSelectedListener {
     UsbSerialPort port = null;
@@ -60,8 +62,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             String result = msg.getData().getString("message");
             //update ui
             switch (msg.what) {
-                case MyMavlinkWork.UI_FLIGHT_MODE:
-                    viewModel.setFlightMode((String)msg.obj);
+                case MyMavlinkWork.UI_HEARTBEAT:
+                    viewModel.setHeartbeat((Heartbeat)msg.obj);
                     break;
                 case MyMavlinkWork.UI_STATUS_TXT:
                     if (msg.arg2 == 0) viewModel.setStatusTxt((String)msg.obj);
@@ -74,20 +76,21 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 case MyMavlinkWork.UI_GLOBAL_POS:
                     viewModel.setGlobalPos((GlobalPositionInt)msg.obj);
                     break;
-                /*case MyMavlinkWork.UI_BAT_STATUS:
-                    tv = (TextView)findViewById(R.id.bat_status);
-                    tv.setText(Html.fromHtml(String.format("<small>Battery</small><br><big><b>%.1f</b></big><small>v</small>", msg.arg1*0.001), Html.FROM_HTML_MODE_COMPACT));
-                    break;
+                //case MyMavlinkWork.UI_BAT_STATUS:
+                //    tv = (TextView)findViewById(R.id.bat_status);
+                //    tv.setText(Html.fromHtml(String.format("<small>Battery</small><br><big><b>%.1f</b></big><small>v</small>", msg.arg1*0.001), Html.FROM_HTML_MODE_COMPACT));
+                //    break;
                 case MyMavlinkWork.UI_GPS_STATUS:
-                    data = msg.getData();
+                    /*data = msg.getData();
                     tv = (TextView)findViewById(R.id.gps_status);
                     tv.setText(Html.fromHtml("<small>GPS</small><br><big><b>"+data.getString("fix")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));
                     tv = (TextView)findViewById(R.id.gps_hdop);
                     tv.setText(Html.fromHtml("<small>HDOP</small><br><big><b>"+data.getString("hdop")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));
                     tv = (TextView)findViewById(R.id.gps_satellites);
-                    tv.setText(Html.fromHtml("<small>Satellites</small><br><big><b>"+data.getInt("satellites")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));
+                    tv.setText(Html.fromHtml("<small>Satellites</small><br><big><b>"+data.getInt("satellites")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));*/
+                    viewModel.setGpsStatus((GpsRawInt)msg.obj);
                     break;
-                case MyMavlinkWork.UI_PARAM_VAL:
+                /*case MyMavlinkWork.UI_PARAM_VAL:
                     data = msg.getData();
                     tv = (TextView)findViewById(R.id.param_val);
                     if (((TextView)findViewById(R.id.param_name)).getText().toString().equalsIgnoreCase(data.getString("name"))) {
@@ -128,15 +131,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             }
         }
     };*/
-
-    public void onLandBtn(View view) {
-        mav_work.setModeLand();
-    }
-
-    public void onRTLBtn(View view) {
-        mav_work.setModeRTL();
-    }
-
     public void onRebootBtn(View view) {
         long ts = SystemClock.elapsedRealtime();
         if (ts - reboot_ts > 3000) {
@@ -181,6 +175,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewModel = new ViewModelProvider(this).get(StatusViewModel.class);
+        viewModel.getDstMode().observe(this, mode->{
+            mav_work.setMode(mode);
+        });
         BottomNavigationView bottomNavigationView = findViewById(R.id.nav_menu_view);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 

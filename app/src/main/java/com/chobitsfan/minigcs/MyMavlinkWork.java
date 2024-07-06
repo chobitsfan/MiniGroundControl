@@ -36,8 +36,7 @@ public class MyMavlinkWork implements Runnable {
     MavlinkConnection mav_conn;
     Handler ui_handler;
     Vehicle vehicle = Vehicle.getInstance(MavAutopilot.MAV_AUTOPILOT_ARDUPILOTMEGA, MavType.MAV_TYPE_QUADROTOR);
-    static String[] GPS_FIX_TYPE = {"No GPS", "No Fix", "2D Fix", "3D Fix", "DGPS", "RTK Float", "RTK Fix"};
-    public static final int UI_FLIGHT_MODE = 1;
+    public static final int UI_HEARTBEAT = 1;
     public static final int UI_STATUS_TXT = 2;
     public static final int UI_BAT_STATUS = 3;
     public static final int UI_GPS_STATUS = 4;
@@ -84,22 +83,13 @@ public class MyMavlinkWork implements Runnable {
         t1.start();
     }
 
-    public void setModeLand() {
+    public void setMode(String mode) {
         try {
-            mav_conn.send1(255,0, vehicle.Land());
+            mav_conn.send1(255,0, vehicle.setMode(mode));
         } catch (IOException e) {
             if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
     }
-
-    public void setModeRTL() {
-        try {
-            mav_conn.send1(255,0, vehicle.RTL());
-        } catch (IOException e) {
-            if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
-        }
-    }
-
     public void readParam(String name) {
         param_rw_sent_ts = SystemClock.elapsedRealtime();
         try {
@@ -146,7 +136,7 @@ public class MyMavlinkWork implements Runnable {
                 Heartbeat hb = (Heartbeat)msg_payload;
                 if (hb.autopilot().entry() == MavAutopilot.MAV_AUTOPILOT_INVALID) continue;
                 //Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
-                vehicle = Vehicle.getInstance(hb.autopilot().entry(), hb.type().entry());
+                /*vehicle = Vehicle.getInstance(hb.autopilot().entry(), hb.type().entry());
                 Message ui_msg = ui_handler.obtainMessage(UI_AP_NAME, vehicle.Name());
                 ui_handler.sendMessage(ui_msg);
                 int flight_mode = (int)hb.customMode();
@@ -156,7 +146,9 @@ public class MyMavlinkWork implements Runnable {
                     ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, 1, 1,  "flight mode " + vehicle.Mode(flight_mode));
                     ui_handler.sendMessage(ui_msg);
                     prv_flight_mode = flight_mode;
-                }
+                }*/
+                Message ui_msg = ui_handler.obtainMessage(UI_HEARTBEAT, hb);
+                ui_handler.sendMessage(ui_msg);
 
                 if (last_hb_ts == 0) {
                     ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, "vehicle " + msg.getOriginSystemId() + " connected " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()));
@@ -210,17 +202,16 @@ public class MyMavlinkWork implements Runnable {
             } else if (msg_payload instanceof GpsRawInt) {
                 last_gps_raw_ts = SystemClock.elapsedRealtime();
                 GpsRawInt gps_raw = (GpsRawInt)msg_payload;
-                Bundle data = new Bundle();
-                data.putString("fix", GPS_FIX_TYPE[gps_raw.fixType().value()]);
-                data.putString("hdop", String.format("%.1f", gps_raw.eph() * 0.01));
-                data.putInt("satellites", gps_raw.satellitesVisible());
-                Message ui_msg = ui_handler.obtainMessage(UI_GPS_STATUS);
-                ui_msg.setData(data);
+                //Bundle data = new Bundle();
+                //data.putString("fix", GPS_FIX_TYPE[gps_raw.fixType().value()]);
+                //data.putString("hdop", String.format("%.1f", gps_raw.eph() * 0.01));
+                //data.putInt("satellites", gps_raw.satellitesVisible());
+                Message ui_msg = ui_handler.obtainMessage(UI_GPS_STATUS, gps_raw);
+                //ui_msg.setData(data);
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof GlobalPositionInt) {
                 last_global_pos_ts = SystemClock.elapsedRealtime();
                 GlobalPositionInt global_pos = (GlobalPositionInt)msg_payload;
-                //Message ui_msg = ui_handler.obtainMessage(UI_GLOBAL_POS, new GlobalPos(global_pos));
                 Message ui_msg = ui_handler.obtainMessage(UI_GLOBAL_POS, global_pos);
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof ParamValue) {
