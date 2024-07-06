@@ -44,8 +44,10 @@ public class StatusFragment extends Fragment {
             tv.append(txt+"\n");
         });
         mViewModel.getGlobalPos().observe(getViewLifecycleOwner(), pos->{
-            TextView tv = requireActivity().findViewById(R.id.msl_alt);
-            tv.setText(Integer.toString(pos.alt()));
+            TextView tv = requireActivity().findViewById(R.id.alt_home);
+            tv.setText(Html.fromHtml(String.format("<small>Altitude above home</small><br><big><b>%.1f</b></big><small>m</small>", pos.relativeAlt()*0.001), Html.FROM_HTML_MODE_COMPACT));
+            tv = requireActivity().findViewById(R.id.alt_msl);
+            tv.setText(Html.fromHtml(String.format("<small>Altitude MSL</small><br><big><b>%.1f</b></big><small>m</small>", pos.alt()*0.001), Html.FROM_HTML_MODE_COMPACT));
         });
         mViewModel.getGpsStatus().observe(getViewLifecycleOwner(), gps->{
             TextView tv = (TextView)requireActivity().findViewById(R.id.gps_status);
