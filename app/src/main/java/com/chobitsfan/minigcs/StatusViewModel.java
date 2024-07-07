@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel;
 import io.dronefleet.mavlink.common.GlobalPositionInt;
 import io.dronefleet.mavlink.common.GpsRawInt;
 import io.dronefleet.mavlink.common.Heartbeat;
+import io.dronefleet.mavlink.common.SysStatus;
 
 public class StatusViewModel extends ViewModel {
     Vehicle vehicle = ArduCopter.getInstance();
@@ -15,6 +16,13 @@ public class StatusViewModel extends ViewModel {
     MutableLiveData<String> statusTxt = new MutableLiveData<>();
     MutableLiveData<GlobalPositionInt> globalPos = new MutableLiveData<>();
     MutableLiveData<GpsRawInt> gpsStatus = new MutableLiveData<>();
+    MutableLiveData<Float> batVol = new MutableLiveData<>();
+    public void setSysStatus(SysStatus status) {
+        batVol.setValue(status.voltageBattery()*0.001f);
+    }
+    public LiveData<Float> getBatVol() {
+        return batVol;
+    }
     public void setHeartbeat(Heartbeat hb) {
         vehicle = Vehicle.getInstance(hb.autopilot().entry(), hb.type().entry());
         curMode.setValue(vehicle.Mode((int)hb.customMode()));

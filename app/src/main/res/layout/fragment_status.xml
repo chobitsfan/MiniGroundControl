@@ -16,13 +16,6 @@
             android:id="@+id/flight_mode"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:text="Flight Mode" />
-        <TextView
-            android:id="@+id/bat_status"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Battery"
-            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
@@ -55,11 +48,11 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <TextView
-            android:id="@+id/alt_home"
+            android:id="@+id/bat_status"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Altitude"
+            android:text="Battery"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
         <TextView
             android:id="@+id/alt_msl"
@@ -67,6 +60,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="Altitude MSL"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+        <TextView
+            android:id="@+id/alt_home"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Relative Alt"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
     </LinearLayout>
     <TextView

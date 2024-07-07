@@ -38,7 +38,7 @@ public class MyMavlinkWork implements Runnable {
     Vehicle vehicle = Vehicle.getInstance(MavAutopilot.MAV_AUTOPILOT_ARDUPILOTMEGA, MavType.MAV_TYPE_QUADROTOR);
     public static final int UI_HEARTBEAT = 1;
     public static final int UI_STATUS_TXT = 2;
-    public static final int UI_BAT_STATUS = 3;
+    public static final int UI_SYS_STATUS = 3;
     public static final int UI_GPS_STATUS = 4;
     public static final int UI_PARAM_VAL = 5;
     public static final int UI_GLOBAL_POS = 6;
@@ -136,17 +136,6 @@ public class MyMavlinkWork implements Runnable {
                 Heartbeat hb = (Heartbeat)msg_payload;
                 if (hb.autopilot().entry() == MavAutopilot.MAV_AUTOPILOT_INVALID) continue;
                 //Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
-                /*vehicle = Vehicle.getInstance(hb.autopilot().entry(), hb.type().entry());
-                Message ui_msg = ui_handler.obtainMessage(UI_AP_NAME, vehicle.Name());
-                ui_handler.sendMessage(ui_msg);
-                int flight_mode = (int)hb.customMode();
-                ui_msg = ui_handler.obtainMessage(UI_FLIGHT_MODE, vehicle.Mode(flight_mode));
-                ui_handler.sendMessage(ui_msg);
-                if (flight_mode != prv_flight_mode) {
-                    ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, 1, 1,  "flight mode " + vehicle.Mode(flight_mode));
-                    ui_handler.sendMessage(ui_msg);
-                    prv_flight_mode = flight_mode;
-                }*/
                 Message ui_msg = ui_handler.obtainMessage(UI_HEARTBEAT, hb);
                 ui_handler.sendMessage(ui_msg);
 
@@ -197,17 +186,12 @@ public class MyMavlinkWork implements Runnable {
             } else if (msg_payload instanceof SysStatus) {
                 last_sys_status_ts = SystemClock.elapsedRealtime();
                 SysStatus status = (SysStatus)msg_payload;
-                Message ui_msg = ui_handler.obtainMessage(UI_BAT_STATUS, status.voltageBattery(), status.currentBattery());
+                Message ui_msg = ui_handler.obtainMessage(UI_SYS_STATUS, status);
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof GpsRawInt) {
                 last_gps_raw_ts = SystemClock.elapsedRealtime();
                 GpsRawInt gps_raw = (GpsRawInt)msg_payload;
-                //Bundle data = new Bundle();
-                //data.putString("fix", GPS_FIX_TYPE[gps_raw.fixType().value()]);
-                //data.putString("hdop", String.format("%.1f", gps_raw.eph() * 0.01));
-                //data.putInt("satellites", gps_raw.satellitesVisible());
                 Message ui_msg = ui_handler.obtainMessage(UI_GPS_STATUS, gps_raw);
-                //ui_msg.setData(data);
                 ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof GlobalPositionInt) {
                 last_global_pos_ts = SystemClock.elapsedRealtime();

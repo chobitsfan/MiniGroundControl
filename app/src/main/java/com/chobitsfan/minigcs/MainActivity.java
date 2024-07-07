@@ -43,6 +43,7 @@ import java.util.Locale;
 import io.dronefleet.mavlink.common.GlobalPositionInt;
 import io.dronefleet.mavlink.common.GpsRawInt;
 import io.dronefleet.mavlink.common.Heartbeat;
+import io.dronefleet.mavlink.common.SysStatus;
 
 public class MainActivity extends AppCompatActivity implements TextToSpeech.OnInitListener, BottomNavigationView.OnNavigationItemSelectedListener {
     UsbSerialPort port = null;
@@ -76,18 +77,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 case MyMavlinkWork.UI_GLOBAL_POS:
                     viewModel.setGlobalPos((GlobalPositionInt)msg.obj);
                     break;
-                //case MyMavlinkWork.UI_BAT_STATUS:
-                //    tv = (TextView)findViewById(R.id.bat_status);
-                //    tv.setText(Html.fromHtml(String.format("<small>Battery</small><br><big><b>%.1f</b></big><small>v</small>", msg.arg1*0.001), Html.FROM_HTML_MODE_COMPACT));
-                //    break;
+                case MyMavlinkWork.UI_SYS_STATUS:
+                    viewModel.setSysStatus((SysStatus)msg.obj);
+                    break;
                 case MyMavlinkWork.UI_GPS_STATUS:
-                    /*data = msg.getData();
-                    tv = (TextView)findViewById(R.id.gps_status);
-                    tv.setText(Html.fromHtml("<small>GPS</small><br><big><b>"+data.getString("fix")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));
-                    tv = (TextView)findViewById(R.id.gps_hdop);
-                    tv.setText(Html.fromHtml("<small>HDOP</small><br><big><b>"+data.getString("hdop")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));
-                    tv = (TextView)findViewById(R.id.gps_satellites);
-                    tv.setText(Html.fromHtml("<small>Satellites</small><br><big><b>"+data.getInt("satellites")+"</b></big>", Html.FROM_HTML_MODE_COMPACT));*/
                     viewModel.setGpsStatus((GpsRawInt)msg.obj);
                     break;
                 /*case MyMavlinkWork.UI_PARAM_VAL:
@@ -108,16 +101,6 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                             }
                         }, 3000);
                     }
-                    break;
-                case MyMavlinkWork.UI_GLOBAL_POS:
-                    tv = (TextView)findViewById(R.id.alt_status);
-                    tv.setText(Html.fromHtml(String.format("<small>Altitude</small><br><big><b>%.1f</b></big><small>m</small>", msg.arg2*0.001), Html.FROM_HTML_MODE_COMPACT));
-                    tv = (TextView)findViewById(R.id.alt_msl_status);
-                    tv.setText(Html.fromHtml(String.format("<small>Altitude MSL</small><br><big><b>%.1f</b></big><small>m</small>", msg.arg1*0.001), Html.FROM_HTML_MODE_COMPACT));
-                    break;
-                case MyMavlinkWork.UI_AP_NAME:
-                    tv = (TextView)findViewById(R.id.ap_name);
-                    tv.setText((String)msg.obj);
                     break;*/
             }
         }
