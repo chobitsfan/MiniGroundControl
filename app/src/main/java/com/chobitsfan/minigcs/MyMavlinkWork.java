@@ -61,14 +61,14 @@ public class MyMavlinkWork implements Runnable {
                         Message ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, "vehicle disconnected " + DateFormat.getTimeInstance(DateFormat.MEDIUM).format(new Date()));
                         ui_handler.sendMessage(ui_msg);
                     }
-                    if (param_rw_sent_ts > 0 && (ts - param_rw_sent_ts > 3000)) {
+                    /*if (param_rw_sent_ts > 0 && (ts - param_rw_sent_ts > 3000)) {
                         param_rw_sent_ts = 0;
                         Message ui_msg = ui_handler.obtainMessage(UI_PARAM_VAL);
                         Bundle data = new Bundle();
                         data.putString("name", "chobits_param_rw_failed");
                         ui_msg.setData(data);
                         ui_handler.sendMessage(ui_msg);
-                    }
+                    }*/
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -201,18 +201,21 @@ public class MyMavlinkWork implements Runnable {
             } else if (msg_payload instanceof ParamValue) {
                 ParamValue p_val = (ParamValue)msg_payload;
                 if (MyAppConfig.DEBUG) Log.d("chobits", "param val " + p_val.paramId() + ":" + p_val.paramValue());
-                Message ui_msg = ui_handler.obtainMessage(UI_PARAM_VAL);
-                Bundle data = new Bundle();
-                data.putString("name", p_val.paramId());
-                if (p_val.paramType().entry() == MavParamType.MAV_PARAM_TYPE_REAL32) {
-                    data.putBoolean("is_float", true);
+                if (p_val.paramId().compareTo("STAT_RUNTIME") != 0) {
+                    Message ui_msg = ui_handler.obtainMessage(UI_PARAM_VAL);
+                    Bundle data = new Bundle();
+                    data.putString("name", p_val.paramId());
                     data.putFloat("val", p_val.paramValue());
-                } else {
-                    data.putBoolean("is_float", false);
-                    data.putInt("val", (int)p_val.paramValue());
+                    /*if (p_val.paramType().entry() == MavParamType.MAV_PARAM_TYPE_REAL32) {
+                        data.putBoolean("is_float", true);
+                        data.putFloat("val", p_val.paramValue());
+                    } else {
+                        data.putBoolean("is_float", false);
+                        data.putInt("val", (int)p_val.paramValue());
+                    }*/
+                    ui_msg.setData(data);
+                    ui_handler.sendMessage(ui_msg);
                 }
-                ui_msg.setData(data);
-                ui_handler.sendMessage(ui_msg);
             } else if (msg_payload instanceof MissionItemReached) {
                 Message ui_msg = ui_handler.obtainMessage(UI_STATUS_TXT, 1, 0,  "Waypoint reached");
                 ui_handler.sendMessage(ui_msg);

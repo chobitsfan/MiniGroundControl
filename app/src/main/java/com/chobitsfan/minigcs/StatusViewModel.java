@@ -1,5 +1,7 @@
 package com.chobitsfan.minigcs;
 
+import android.util.Pair;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -17,6 +19,20 @@ public class StatusViewModel extends ViewModel {
     MutableLiveData<GlobalPositionInt> globalPos = new MutableLiveData<>();
     MutableLiveData<GpsRawInt> gpsStatus = new MutableLiveData<>();
     MutableLiveData<Float> batVol = new MutableLiveData<>();
+    MutableLiveData<String> paramRead = new MutableLiveData<>();
+    MutableLiveData<Pair<String,Float>> paramValue = new MutableLiveData<Pair<String, Float>>();
+    public void setParamValue(String name, float val) {
+        paramValue.setValue(new Pair<>(name, val));
+    }
+    public LiveData<Pair<String, Float>> getParamValue() {
+        return paramValue;
+    }
+    public void setParamRead(String name) {
+        paramRead.setValue(name);
+    }
+    public LiveData<String> getParamRead() {
+        return paramRead;
+    }
     public void setSysStatus(SysStatus status) {
         batVol.setValue(status.voltageBattery()*0.001f);
     }

@@ -8,4 +8,8 @@
         android:id="@+id/menu_map"
         android:title="Map"
         android:icon="@drawable/map_24px"/>
+    <item
+        android:id="@+id/menu_setup"
+        android:title="Setup"
+        android:icon="@drawable/baseline_settings_24"/>
 </menu>

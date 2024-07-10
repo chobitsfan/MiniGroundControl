@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
     private StatusViewModel viewModel;
     StatusFragment statusFragment = new StatusFragment();
     MapsFragment mapsFragment = new MapsFragment();
+    SetupFragment setupFragment = new SetupFragment();
     Handler ui_handler = new Handler(Looper.myLooper()) {
         @Override
         public void handleMessage(Message msg) {
@@ -83,9 +84,10 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                 case MyMavlinkWork.UI_GPS_STATUS:
                     viewModel.setGpsStatus((GpsRawInt)msg.obj);
                     break;
-                /*case MyMavlinkWork.UI_PARAM_VAL:
+                case MyMavlinkWork.UI_PARAM_VAL:
                     data = msg.getData();
-                    tv = (TextView)findViewById(R.id.param_val);
+                    viewModel.setParamValue(data.getString("name"), data.getFloat("val"));
+                    /*tv = (TextView)findViewById(R.id.param_val);
                     if (((TextView)findViewById(R.id.param_name)).getText().toString().equalsIgnoreCase(data.getString("name"))) {
                         if (data.getBoolean("is_float")) {
                             tv.setText(Float.toString(data.getFloat("val")));
@@ -100,8 +102,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
                                 ((TextView)findViewById(R.id.param_val)).setHint("parameter value");
                             }
                         }, 3000);
-                    }
-                    break;*/
+                    }*/
+                    break;
             }
         }
     };
@@ -126,19 +128,18 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
     }
 
-    public void onReadParam(View view) {
-        /*TextView tv = (TextView)findViewById(R.id.param_name);
+    /*public void onReadParam(View view) {
+        TextView tv = (TextView)findViewById(R.id.param_name);
         String param_name = tv.getText().toString();
         if (!param_name.equals("")) {
             tv = (TextView)findViewById(R.id.param_val);
             tv.setText("");
             tv.setHint("reading...");
             mav_work.readParam(param_name);
-        }*/
+        }
     }
-
     public void onWriteParam(View view) {
-        /*TextView tv = (TextView)findViewById(R.id.param_name);
+        TextView tv = (TextView)findViewById(R.id.param_name);
         String param_name = tv.getText().toString();
         if (param_name.equals("")) return;
         tv = (TextView)findViewById(R.id.param_val);
@@ -150,8 +151,8 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         }
         tv.setText("");
         tv.setHint("writing...");
-        mav_work.writeParam(param_name, param_val);*/
-    }
+        mav_work.writeParam(param_name, param_val);
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -160,6 +161,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         viewModel = new ViewModelProvider(this).get(StatusViewModel.class);
         viewModel.getDstMode().observe(this, mode->{
             mav_work.setMode(mode);
+        });
+        viewModel.getParamRead().observe(this, name->{
+            mav_work.readParam(name);
         });
         BottomNavigationView bottomNavigationView = findViewById(R.id.nav_menu_view);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
@@ -261,6 +265,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
             return true;
         } else if (itemId == R.id.menu_map) {
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_view, mapsFragment).commit();
+            return true;
+        } else if (itemId == R.id.menu_setup) {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_view, setupFragment).commit();
             return true;
         }
         return false;
