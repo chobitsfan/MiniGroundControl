@@ -45,5 +45,15 @@ public class SetupFragment extends Fragment {
                 mViewModel.setParamRead(name);
             }
         });
+        requireActivity().findViewById(R.id.write_param_btn).setOnClickListener(v->{
+            TextView tv = requireActivity().findViewById(R.id.param_name);
+            String name = tv.getText().toString();
+            tv = requireActivity().findViewById(R.id.param_val);
+            String val = tv.getText().toString();
+            if (!name.isEmpty() && !val.isEmpty()) {
+                float p_val = Float.parseFloat(val);
+                mViewModel.setParamWrite(name, p_val);
+            }
+        });
     }
 }

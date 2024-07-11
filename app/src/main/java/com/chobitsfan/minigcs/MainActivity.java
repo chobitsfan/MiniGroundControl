@@ -165,6 +165,9 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         viewModel.getParamRead().observe(this, name->{
             mav_work.readParam(name);
         });
+        viewModel.getParamWrite().observe(this, param_pair->{
+            mav_work.writeParam(param_pair.first, param_pair.second);
+        });
         BottomNavigationView bottomNavigationView = findViewById(R.id.nav_menu_view);
         bottomNavigationView.setOnNavigationItemSelectedListener(this);
 

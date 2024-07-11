@@ -21,6 +21,13 @@ public class StatusViewModel extends ViewModel {
     MutableLiveData<Float> batVol = new MutableLiveData<>();
     MutableLiveData<String> paramRead = new MutableLiveData<>();
     MutableLiveData<Pair<String,Float>> paramValue = new MutableLiveData<Pair<String, Float>>();
+    MutableLiveData<Pair<String,Float>> paramWrite = new MutableLiveData<Pair<String, Float>>();
+    public void setParamWrite(String name, float val) {
+        paramWrite.setValue(new Pair<>(name, val));
+    }
+    public LiveData<Pair<String, Float>> getParamWrite() {
+        return paramWrite;
+    }
     public void setParamValue(String name, float val) {
         paramValue.setValue(new Pair<>(name, val));
     }
