@@ -4,6 +4,7 @@ import io.dronefleet.mavlink.common.MavAutopilot;
 import io.dronefleet.mavlink.common.MavType;
 
 public abstract class Vehicle {
+    int sysId = 1;
     public abstract String Mode(int customMode);
     public abstract Object Land();
     public abstract Object RTL();

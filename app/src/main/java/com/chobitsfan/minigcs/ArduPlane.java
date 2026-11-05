@@ -18,12 +18,12 @@ public class ArduPlane extends Vehicle {
 
     @Override
     public Object Land() {
-        return SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(11).build();
+        return SetMode.builder().targetSystem(sysId).baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(11).build();
     }
 
     @Override
     public Object RTL() {
-        return SetMode.builder().baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(11).build();
+        return SetMode.builder().targetSystem(sysId).baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(11).build();
     }
 
     @Override

@@ -147,6 +147,7 @@ public class MyMavlinkWork implements Runnable {
                 if (hb.autopilot().entry() == MavAutopilot.MAV_AUTOPILOT_INVALID) continue;
                 //Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
                 vehicle = Vehicle.getInstance(hb.autopilot().entry(), hb.type().entry());
+                vehicle.sysId = msg.getOriginSystemId();
                 Message ui_msg = ui_handler.obtainMessage(UI_AP_NAME, vehicle.Name());
                 ui_handler.sendMessage(ui_msg);
                 int flight_mode = (int)hb.customMode();

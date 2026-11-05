@@ -34,12 +34,12 @@ public class PX4 extends Vehicle {
 
     @Override
     public Object Land() {
-        return SetMode.builder().targetSystem(1).baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(customMode(MAIN_MODE_AUTO, AUTO_SUB_MODE_LAND)).build();
+        return SetMode.builder().targetSystem(sysId).baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(customMode(MAIN_MODE_AUTO, AUTO_SUB_MODE_LAND)).build();
     }
 
     @Override
     public Object RTL() {
-        return SetMode.builder().targetSystem(1).baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(customMode(MAIN_MODE_AUTO, AUTO_SUB_MODE_RTL)).build();
+        return SetMode.builder().targetSystem(sysId).baseMode(MavModeFlag.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED).customMode(customMode(MAIN_MODE_AUTO, AUTO_SUB_MODE_RTL)).build();
     }
 
     @Override
