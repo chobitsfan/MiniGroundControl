@@ -38,4 +38,5 @@
     <usb-device vendor-id="4617" product-id="22337" /><!-- 0x1209 / 0x5741: ardupilot fc -->
     <usb-device vendor-id="4617" product-id="22336" /><!-- 0x1209 / 0x5740: ph4 mini -->
     <usb-device vendor-id="11694" product-id="4118" /><!-- 0x2DAE / 0x1016: cube orange -->
+    <usb-device vendor-id="12642" product-id="83" /><!-- 0x3162 / 0x53: ph6 -->
 </resources>

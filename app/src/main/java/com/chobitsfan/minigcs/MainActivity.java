@@ -221,6 +221,7 @@ public class MainActivity extends AppCompatActivity implements TextToSpeech.OnIn
         myProbeTable.addProduct(0x1209, 0x5741, CdcAcmSerialDriver.class); // ardupilot fc
         myProbeTable.addProduct(0x1209, 0x5740, CdcAcmSerialDriver.class); //ph4 mini
         myProbeTable.addProduct(0x2dae, 0x1016, CdcAcmSerialDriver.class); // cube orange
+        myProbeTable.addProduct(0x3162, 0x53, CdcAcmSerialDriver.class); // ph6
         UsbSerialProber myProber = new UsbSerialProber(myProbeTable);
         List<UsbSerialDriver> availableDrivers = myProber.findAllDrivers(manager);
         if (availableDrivers.isEmpty()) {
