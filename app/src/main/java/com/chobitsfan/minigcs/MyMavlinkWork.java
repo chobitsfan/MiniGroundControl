@@ -35,7 +35,7 @@ import io.dronefleet.mavlink.common.SysStatus;
 public class MyMavlinkWork implements Runnable {
     MavlinkConnection mav_conn;
     Handler ui_handler;
-    Vehicle vehicle = Vehicle.getInstance(MavAutopilot.MAV_AUTOPILOT_ARDUPILOTMEGA, MavType.MAV_TYPE_QUADROTOR);
+    volatile Vehicle vehicle = Vehicle.getInstance(MavAutopilot.MAV_AUTOPILOT_ARDUPILOTMEGA, MavType.MAV_TYPE_QUADROTOR);
     public static final int UI_HEARTBEAT = 1;
     public static final int UI_STATUS_TXT = 2;
     public static final int UI_SYS_STATUS = 3;
@@ -84,8 +84,10 @@ public class MyMavlinkWork implements Runnable {
     }
 
     public void setMode(String mode) {
+        Object msg = vehicle.setMode(mode);
+        if (msg == null) return;
         try {
-            mav_conn.send1(255,0, vehicle.setMode(mode));
+            mav_conn.send1(255,0, msg);
         } catch (IOException e) {
             if (MyAppConfig.DEBUG) Log.d("chobits", e.getMessage());
         }
@@ -135,6 +137,7 @@ public class MyMavlinkWork implements Runnable {
                 // This is a heartbeat message
                 Heartbeat hb = (Heartbeat)msg_payload;
                 if (hb.autopilot().entry() == MavAutopilot.MAV_AUTOPILOT_INVALID) continue;
+                vehicle = Vehicle.getInstance(hb.autopilot().entry(), hb.type().entry());
                 //Log.d("chobits", "heartbeat " + msg.getOriginSystemId() + "," + hb.customMode() + "," + msg.getSequence());
                 Message ui_msg = ui_handler.obtainMessage(UI_HEARTBEAT, hb);
                 ui_handler.sendMessage(ui_msg);

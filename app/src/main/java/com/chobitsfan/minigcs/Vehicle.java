@@ -9,7 +9,9 @@ public abstract class Vehicle {
     public abstract Object setMode(String mode);
     public abstract String Name();
     public static Vehicle getInstance(MavAutopilot autopilot, MavType type) {
-        if (type == MavType.MAV_TYPE_FIXED_WING) {
+        if (autopilot == MavAutopilot.MAV_AUTOPILOT_PX4) {
+            return PX4.getInstance();
+        } else if (type == MavType.MAV_TYPE_FIXED_WING) {
             return ArduPlane.getInstance();
         } else {
             return ArduCopter.getInstance();
